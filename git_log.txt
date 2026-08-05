@@ -1,0 +1,87 @@
+commit 1139da90ee66d97180b6ad02082818685a303664
+Author: fakeMichael1234 <michaelsebastian399@gmail.com>
+Date:   Thu Aug 6 02:43:43 2026 +0530
+
+    Add and fix landing page content
+
+ gridguard-landing-page                             |    1 -
+ gridguard-landing-page/.gitignore                  |   41 +
+ gridguard-landing-page/AGENTS.md                   |    9 +
+ gridguard-landing-page/CLAUDE.md                   |    1 +
+ gridguard-landing-page/README.md                   |   36 +
+ gridguard-landing-page/eslint.config.mjs           |   18 +
+ gridguard-landing-page/next.config.ts              |    7 +
+ gridguard-landing-page/package-lock.json           | 7565 ++++++++++++++++++++
+ gridguard-landing-page/package.json                |   32 +
+ gridguard-landing-page/postcss.config.mjs          |    7 +
+ gridguard-landing-page/public/file.svg             |    1 +
+ gridguard-landing-page/public/globe.svg            |    1 +
+ gridguard-landing-page/public/next.svg             |    1 +
+ gridguard-landing-page/public/vercel.svg           |    1 +
+ gridguard-landing-page/public/window.svg           |    1 +
+ gridguard-landing-page/src/app/favicon.ico         |  Bin 0 -> 25931 bytes
+ gridguard-landing-page/src/app/globals.css         |   59 +
+ gridguard-landing-page/src/app/layout.tsx          |   29 +
+ gridguard-landing-page/src/app/page.tsx            |   28 +
+ .../src/components/sections/Benefits.tsx           |   72 +
+ .../src/components/sections/CTA.tsx                |   51 +
+ .../src/components/sections/Features.tsx           |   87 +
+ .../src/components/sections/Footer.tsx             |   62 +
+ .../src/components/sections/Hero.tsx               |   79 +
+ .../src/components/sections/HowItWorks.tsx         |   66 +
+ .../src/components/sections/Navbar.tsx             |   81 +
+ .../src/components/sections/Showcase.tsx           |   97 +
+ .../src/components/sections/Testimonials.tsx       |   56 +
+ .../src/components/three/GridModel.tsx             |  122 +
+ gridguard-landing-page/tsconfig.json               |   34 +
+ 30 files changed, 8644 insertions(+), 1 deletion(-)
+
+commit 44d8c13109f0fcab3538b6cac2b70522cb29e08d
+Author: fakeMichael1234 <michaelsebastian399@gmail.com>
+Date:   Thu Aug 6 02:40:26 2026 +0530
+
+    Initialize project and fix icons
+
+ .gitignore                                     |    8 +
+ admin-common.js                                |   29 +
+ admin-faults.html                              |  140 +++
+ admin-incident-creation.html                   |  135 +++
+ admin-priority-queue.html                      |  107 ++
+ admin-sensor-detail.html                       |  129 +++
+ admin.css                                      |  120 +++
+ civic-ui-standards.skill                       |  Bin 0 -> 1898 bytes
+ civic-ui-standards/civic-ui-standards/SKILL.md |   38 +
+ common.js                                      |  322 ++++++
+ emergency.html                                 |  111 ++
+ gridguard-landing-page                         |    1 +
+ history.html                                   |   85 ++
+ index.html                                     |  131 +++
+ landing-page/package-lock.json                 | 1037 +++++++++++++++++++
+ landing-page/package.json                      |   13 +
+ login.html                                     |  128 +++
+ logo.png                                       |  Bin 0 -> 619332 bytes
+ logo_v2.png                                    |  Bin 0 -> 619332 bytes
+ notifications.html                             |   76 ++
+ register.html                                  |   85 ++
+ report-issue.html                              |  233 +++++
+ skill-creator/LICENSE.txt                      |  202 ++++
+ skill-creator/SKILL.md                         |  485 +++++++++
+ skill-creator/agents/analyzer.md               |  274 +++++
+ skill-creator/agents/comparator.md             |  202 ++++
+ skill-creator/agents/grader.md                 |  223 ++++
+ skill-creator/assets/eval_review.html          |  146 +++
+ skill-creator/eval-viewer/generate_review.py   |  471 +++++++++
+ skill-creator/eval-viewer/viewer.html          | 1325 ++++++++++++++++++++++++
+ skill-creator/references/schemas.md            |  430 ++++++++
+ skill-creator/scripts/__init__.py              |    0
+ skill-creator/scripts/aggregate_benchmark.py   |  401 +++++++
+ skill-creator/scripts/generate_report.py       |  326 ++++++
+ skill-creator/scripts/improve_description.py   |  247 +++++
+ skill-creator/scripts/package_skill.py         |  136 +++
+ skill-creator/scripts/quick_validate.py        |  103 ++
+ skill-creator/scripts/run_eval.py              |  310 ++++++
+ skill-creator/scripts/run_loop.py              |  328 ++++++
+ skill-creator/scripts/utils.py                 |   47 +
+ status-tracking.html                           |   95 ++
+ style.css                                      |  489 +++++++++
+ 42 files changed, 9168 insertions(+)

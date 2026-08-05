@@ -1,0 +1,6 @@
+ D .gitignore
+ M gridguard-landing-page/src/components/sections/Footer.tsx
+?? files.txt
+?? git_status.txt
+?? landing-page/node_modules/
+?? status.txt
