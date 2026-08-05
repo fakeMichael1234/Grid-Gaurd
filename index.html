@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overview - Grid Guard Citizen Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Citizen Infrastructure Operations Overview</h1>
+        <p class="page-desc">Track active grid reports, view municipal response status, and report new issues.</p>
+      </div>
+      <div style="display: flex; gap: 0.75rem;">
+        <a href="report-issue.html" class="btn btn-primary">
+          <i data-lucide="plus-circle"></i> File Incident Report
+        </a>
+        <a href="emergency.html" class="btn btn-danger">
+          <i data-lucide="alert-triangle"></i> Emergency Dispatch
+        </a>
+      </div>
+    </div>
+
+    <!-- Quick Stat Overview Cards -->
+    <div class="grid-2" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 1.5rem;">
+      <div class="card" style="display: flex; align-items: center; gap: 1rem; margin: 0;">
+        <div style="background: #2563eb; color: white; width: 48px; height: 48px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+          <i data-lucide="file-text"></i>
+        </div>
+        <div>
+          <span style="font-size: 1.5rem; font-weight: 700; display: block;" id="dash-total-count">0</span>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Total Incidents Filed</span>
+        </div>
+      </div>
+
+      <div class="card" style="display: flex; align-items: center; gap: 1rem; margin: 0;">
+        <div style="background: #d97706; color: white; width: 48px; height: 48px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+          <i data-lucide="clock"></i>
+        </div>
+        <div>
+          <span style="font-size: 1.5rem; font-weight: 700; display: block;" id="dash-pending-count">0</span>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Pending / In Dispatch</span>
+        </div>
+      </div>
+
+      <div class="card" style="display: flex; align-items: center; gap: 1rem; margin: 0;">
+        <div style="background: #059669; color: white; width: 48px; height: 48px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+          <i data-lucide="check-circle-2"></i>
+        </div>
+        <div>
+          <span style="font-size: 1.5rem; font-weight: 700; display: block;" id="dash-resolved-count">0</span>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Resolved Incidents</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Public Advisory Box -->
+    <div class="card" style="border-left: 4px solid var(--accent-blue);">
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+        <i data-lucide="radio" style="color: #2563eb;"></i>
+        <h3 style="font-size: 1rem; font-weight: 600;">Active Grid Advisory - Ward 4 Sector</h3>
+      </div>
+      <p style="font-size: 0.9rem; color: var(--text-muted);">
+        Maintenance teams are currently responding to severe wind-related power line disruptions near Elm Street. Priority response units dispatched.
+      </p>
+    </div>
+
+    <!-- Recent Incidents Table -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 style="font-size: 1.125rem; font-weight: 600;">Recent Complaint Submissions</h2>
+        <a href="history.html" class="btn btn-secondary btn-sm">View Full History</a>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Ticket ID</th>
+              <th>Category</th>
+              <th>Location</th>
+              <th>Date Filed</th>
+              <th>Severity</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="dash-reports-tbody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="common.js"></script>
+  <script>
+    if (GridApp.requireCitizen()) {
+      renderAppHeader('dashboard');
+      renderAppFooter();
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const reports = GridApp.get('reports', []);
+        document.getElementById('dash-total-count').textContent = reports.length;
+        document.getElementById('dash-pending-count').textContent = reports.filter(r => r.status !== 'Resolved').length;
+        document.getElementById('dash-resolved-count').textContent = reports.filter(r => r.status === 'Resolved').length;
+
+        const tbody = document.getElementById('dash-reports-tbody');
+        tbody.innerHTML = reports.slice(0, 5).map(r => `
+          <tr>
+            <td><strong>${r.id}</strong></td>
+            <td>${r.type}</td>
+            <td>${r.location}</td>
+            <td>${r.date}</td>
+            <td><span class="${getPriorityClass(r.severity)}">${r.severity}</span></td>
+            <td><span class="badge ${getBadgeClass(r.status)}">${r.status}</span></td>
+            <td><a href="status-tracking.html?id=${r.id}" class="btn btn-secondary btn-sm">Track Progress</a></td>
+          </tr>
+        `).join('');
+
+        if (window.lucide) lucide.createIcons();
+      });
+    }
+  </script>
+</body>
+</html>

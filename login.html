@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Gateway - Grid Guard Unified System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="admin-shell" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #0b1727; padding: 2rem 1rem;">
+
+  <div style="text-align: center; margin-bottom: 2.5rem; max-width: 600px;">
+    <div style="display: inline-flex; align-items: center; gap: 0.75rem; background: #1e293b; padding: 0.5rem 1.25rem; border-radius: 99px; border: 1px solid #334155; margin-bottom: 1rem;">
+      <img src="logo_v2.png" style="height: 28px; width: 28px; border-radius: 50%;" />
+      <span style="color: #cbd5e1; font-weight: 600; font-size: 0.875rem; letter-spacing: 0.05em; text-transform: uppercase;">Grid Guard Unified Gateway</span>
+    </div>
+    <h1 style="font-size: 2rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.5rem;">Municipal Infrastructure & Telemetry Portal</h1>
+    <p style="font-size: 0.95rem; color: #94a3b8;">Select authorization level to sign in to the platform.</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2rem; width: 100%; max-width: 900px;">
+    
+    <!-- User / Citizen Portal Login Card -->
+    <div class="auth-container" style="background: #0f172a; border: 1px solid #1e293b; color: white; padding: 2rem; border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #1e293b;">
+          <div style="background: #2563eb; color: white; width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+            <i data-lucide="user"></i>
+          </div>
+          <div>
+            <h2 style="font-size: 1.2rem; font-weight: 700; color: #f8fafc;">User Login</h2>
+            <span style="font-size: 0.75rem; color: #38bdf8;">Citizen Infrastructure Portal</span>
+          </div>
+        </div>
+
+        <form id="form-login-citizen">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">Citizen Email / Account ID</label>
+            <input type="email" id="citizen-email" required value="m.scott@scranton.gov" style="background: #1e293b; border-color: #334155; color: white; width: 100%; padding: 0.6rem; border-radius: 4px;" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">Password</label>
+            <input type="password" id="citizen-pass" required value="password123" style="background: #1e293b; border-color: #334155; color: white; width: 100%; padding: 0.6rem; border-radius: 4px;" />
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block btn-lg" style="background: #2563eb; border: none; width: 100%; padding: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 4px;">
+            <i data-lucide="log-in"></i> User Login
+          </button>
+        </form>
+      </div>
+
+      <div style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #1e293b; font-size: 0.85rem; color: #94a3b8;">
+        New user? <a href="register.html" style="color: #38bdf8; font-weight: 600; text-decoration: none;">Register Citizen Account</a>
+      </div>
+    </div>
+
+    <!-- Admin / Operations Center Login Card -->
+    <div class="auth-container" style="background: #0f172a; border: 1px solid #1e293b; color: white; padding: 2rem; border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #1e293b;">
+          <div style="background: #dc2626; color: white; width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+            <i data-lucide="shield-check"></i>
+          </div>
+          <div>
+            <h2 style="font-size: 1.2rem; font-weight: 700; color: #f8fafc;">Admin Login</h2>
+            <span style="font-size: 0.75rem; color: #f87171;">Operations Center & Telemetry Hub</span>
+          </div>
+        </div>
+
+        <form id="form-login-admin">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">Ops Dispatcher Username / ID</label>
+            <input type="text" id="admin-user" required value="ops_dispatcher_01" style="background: #1e293b; border-color: #334155; color: white; width: 100%; padding: 0.6rem; border-radius: 4px;" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">Security Key</label>
+            <input type="password" id="admin-pass" required value="adminpass2026" style="background: #1e293b; border-color: #334155; color: white; width: 100%; padding: 0.6rem; border-radius: 4px;" />
+          </div>
+
+          <button type="submit" class="btn btn-danger btn-block btn-lg" style="background: #dc2626; border: none; width: 100%; padding: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 4px;">
+            <i data-lucide="lock"></i> Admin Login
+          </button>
+        </form>
+      </div>
+
+      <div style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #1e293b; font-size: 0.75rem; color: #64748b;">
+        Authorized Infrastructure Operations Personnel Only.
+      </div>
+    </div>
+
+  </div>
+
+  <script src="common.js"></script>
+  <script>
+    document.getElementById('form-login-citizen').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('citizen-email').value;
+      GridApp.set('session', {
+        role: 'citizen',
+        email,
+        name: email.split('@')[0].toUpperCase(),
+        id: 'CIT-88492'
+      });
+      window.location.href = 'index.html';
+    });
+
+    document.getElementById('form-login-admin').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const u = document.getElementById('admin-user').value;
+      GridApp.set('session', {
+        role: 'admin',
+        email: 'ops@gridguard.gov',
+        name: u,
+        id: 'OPS-DISPATCH-01'
+      });
+      window.location.href = 'admin-faults.html';
+    });
+
+    if (window.lucide) lucide.createIcons();
+  </script>
+</body>
+</html>

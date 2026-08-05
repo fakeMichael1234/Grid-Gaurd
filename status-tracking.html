@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Status Tracking - Grid Guard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Complaint Status & Audit Tracking</h1>
+        <p class="page-desc">Real-time inspection timeline and municipal dispatch progression.</p>
+      </div>
+      <a href="history.html" class="btn btn-secondary btn-sm">Back to History</a>
+    </div>
+
+    <div id="tracking-content">
+    </div>
+  </main>
+
+  <script src="common.js"></script>
+  <script>
+    renderAppHeader('history');
+    renderAppFooter();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const ticketId = urlParams.get('id');
+      const reports = GridApp.get('reports', []);
+      const report = reports.find(r => r.id === ticketId) || reports[0];
+
+      const container = document.getElementById('tracking-content');
+
+      if (!report) {
+        container.innerHTML = `<div class="card"><p>Ticket record not found.</p></div>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+            <div>
+              <span style="font-family: monospace; font-weight: 700; color: var(--text-muted); font-size: 0.9rem;">TICKET: ${report.id}</span>
+              <h2 style="font-size: 1.25rem; font-weight: 700; margin-top: 0.25rem;">${report.title}</h2>
+            </div>
+            <span class="badge ${getBadgeClass(report.status)}" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">${report.status}</span>
+          </div>
+
+          <div class="grid-2" style="margin-bottom: 1.5rem;">
+            <div>
+              <p style="font-size: 0.875rem; color: var(--text-muted);"><strong>Category:</strong> ${report.type}</p>
+              <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;"><strong>Severity Level:</strong> <span class="${getPriorityClass(report.severity)}">${report.severity}</span></p>
+              <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;"><strong>Date Logged:</strong> ${report.date}</p>
+            </div>
+            <div>
+              <p style="font-size: 0.875rem; color: var(--text-muted);"><strong>Location:</strong> ${report.location}</p>
+              <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;"><strong>GPS Coordinates:</strong> ${report.lat}, ${report.lng}</p>
+              <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;"><strong>Contact On-Site:</strong> ${report.contactPhone || 'N/A'}</p>
+            </div>
+          </div>
+
+          <div style="background-color: #f8fafc; padding: 1rem; border-radius: var(--border-radius); border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+            <h4 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.25rem;">Detailed Incident Report:</h4>
+            <p style="font-size: 0.875rem; color: var(--text-main);">${report.description}</p>
+          </div>
+
+          <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--primary-color);">Municipal Response Audit Timeline</h3>
+          
+          <div style="position: relative; padding-left: 1.5rem; border-left: 2px solid var(--border-color);">
+            ${report.timeline.map((step) => `
+              <div style="position: relative; margin-bottom: 1.25rem;">
+                <div style="position: absolute; left: -1.85rem; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent-blue);"></div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong style="font-size: 0.95rem;">${step.status}</strong>
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">${step.time}</span>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">${step.note}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

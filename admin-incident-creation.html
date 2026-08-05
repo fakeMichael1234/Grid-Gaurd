@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sensor Alerts - Grid Guard Ops</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="admin-shell">
+  <main class="main-content" style="max-width: 1350px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid #1e293b; padding-bottom: 1rem;">
+      <div>
+        <h1 class="page-title" style="color: #f8fafc;">Hardware Sensor Alerts</h1>
+        <p style="color: #94a3b8; font-size: 0.875rem;">Real-time feed of sensor-originated grid anomalies (voltage drops, overcurrent, pole tilts, transformer overheating, broken lines).</p>
+      </div>
+      <div style="display: flex; gap: 0.75rem;">
+        <button id="btn-trigger-anomaly" class="btn btn-danger btn-sm" style="background: #dc2626; border: none;">
+          <i data-lucide="zap"></i> Simulate Sensor Anomaly
+        </button>
+        <button id="btn-poll-sensors" class="btn btn-secondary btn-sm" style="background: #1e293b; border-color: #334155; color: #38bdf8;">
+          <i data-lucide="refresh-cw"></i> Poll Sensors Now
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Sensor Alerts Table -->
+    <div class="admin-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-size: 0.95rem; font-weight: 600; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.04em;">
+          Active Sensor Alerts (<span id="alerts-count">0</span> Hardware Faults Detected)
+        </h3>
+        <span style="font-size: 0.75rem; color: #6ee7b7; font-family: monospace;"><i data-lucide="activity" style="width: 12px; height: 12px;"></i> Telemetry Stream: Hardware Direct</span>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Alert Ref</th>
+              <th>Pole ID</th>
+              <th>Location / Grid Node</th>
+              <th>Sensor Fault Category</th>
+              <th>Trigger Reading</th>
+              <th>Severity</th>
+              <th>Last Ping</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="sensor-alerts-tbody">
+            <!-- Injected via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="common.js"></script>
+  <script>
+    if (GridApp.requireAdmin()) {
+    renderAppHeader('sensor-alerts');
+    renderAppFooter();
+
+    function renderSensorAlerts() {
+      const sensorAlerts = GridApp.getSensorAlerts();
+      const tbody = document.getElementById('sensor-alerts-tbody');
+      document.getElementById('alerts-count').textContent = sensorAlerts.length;
+
+      if (sensorAlerts.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" style="text-align: center; color: #64748b; padding: 2rem;">
+              No hardware sensor alerts currently active. Grid nodes operating within nominal thresholds.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = sensorAlerts.map(alt => `
+        <tr>
+          <td><strong style="font-family: monospace; color: #f8fafc;">${alt.id}</strong></td>
+          <td><strong style="font-family: monospace; color: #38bdf8;">${alt.poleId}</strong></td>
+          <td><span style="color: #e2e8f0;">${alt.location}</span></td>
+          <td>
+            <span class="telemetry-pill ${alt.severity === 'Critical' ? 'telemetry-crit' : 'telemetry-warn'}">
+              ${alt.faultType}
+            </span>
+          </td>
+          <td style="font-family: monospace; color: #fde047; font-size: 0.8rem;">
+            ${alt.triggerReading}
+          </td>
+          <td><span class="badge ${alt.severity === 'Critical' ? 'priority-emergency' : 'priority-high'}">${alt.severity}</span></td>
+          <td style="color: #94a3b8; font-size: 0.75rem;">${alt.lastPing}</td>
+          <td>
+            <a href="admin-sensor-detail.html?id=${alt.poleId}" class="btn btn-secondary btn-sm" style="background: #1e293b; border-color: #334155; color: #f8fafc; padding: 2px 8px;">
+              <i data-lucide="bar-chart-2" style="width: 12px; height: 12px;"></i> Diagnostics
+            </a>
+          </td>
+        </tr>
+      `).join('');
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    document.getElementById('btn-trigger-anomaly').addEventListener('click', () => {
+      const poles = GridApp.get('poles', []);
+      if (poles.length > 0) {
+        poles[0].status = 'CRITICAL';
+        poles[0].temp = 104.8;
+        poles[0].voltage = 175;
+        poles[0].tilt = 16.5;
+        GridApp.set('poles', poles);
+        renderSensorAlerts();
+      }
+    });
+
+    document.getElementById('btn-poll-sensors').addEventListener('click', () => {
+      const poles = GridApp.get('poles', []);
+      poles.forEach(p => {
+        p.lastPing = 'Just now';
+      });
+      GridApp.set('poles', poles);
+      renderSensorAlerts();
+    });
+
+    document.addEventListener('DOMContentLoaded', renderSensorAlerts);
+    }
+  </script>
+</body>
+</html>

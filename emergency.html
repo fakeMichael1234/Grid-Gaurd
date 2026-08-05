@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emergency Fast-Path - Grid Guard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <main class="main-content">
+    <div class="emergency-alert-card">
+      <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--emergency-red); margin-bottom: 0.5rem;">
+        <i data-lucide="siren" style="width: 32px; height: 32px;"></i>
+        <h1 style="font-size: 1.35rem; font-weight: 700;">Emergency Infrastructure Fast-Path Dispatch</h1>
+      </div>
+      <p style="font-size: 0.9rem; color: #7f1d1d;">
+        Use this streamlined form ONLY for active life-safety hazards: downed live high-voltage wires, transformer explosions, major gas leaks, or main water bursts threatening structures.
+      </p>
+    </div>
+
+    <form id="emergency-form" class="card" style="padding: 2rem; border-top: 4px solid var(--emergency-red);">
+      <div class="form-group">
+        <label for="em-hazard-type">Select Hazard Type *</label>
+        <select id="em-hazard-type" required style="border-color: var(--emergency-red); font-weight: 600;">
+          <option value="Live High-Voltage Wire Down">Live High-Voltage Wire Down</option>
+          <option value="Transformer Sparking / Fire / Explosion">Transformer Sparking / Fire / Explosion</option>
+          <option value="Gas Leak / Heavy Odor Suspected">Gas Leak / Heavy Odor Suspected</option>
+          <option value="Water Main Burst / Severe Flooding">Water Main Burst / Severe Flooding</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="em-location">Exact Location / Address *</label>
+        <input type="text" id="em-location" required placeholder="e.g. 452 Elm Street outside Ward 4 Primary School" />
+      </div>
+
+      <div class="form-group">
+        <label for="em-phone">Contact Phone for Dispatch Verification *</label>
+        <input type="tel" id="em-phone" required placeholder="+1 (555) 911-0199" />
+      </div>
+
+      <div class="form-group">
+        <label for="em-notes">Immediate Hazard Notes (Minimal)</label>
+        <textarea id="em-notes" rows="2" placeholder="e.g., Sparks visible, road blocked, nearby homes unpowered"></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+        <a href="index.html" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-danger btn-lg" style="box-shadow: 0 0 0 3px rgba(220,38,38,0.3);">
+          <i data-lucide="zap"></i> Trigger Immediate Dispatch Priority
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <script src="common.js"></script>
+  <script>
+    renderAppHeader('');
+    renderAppFooter();
+
+    document.getElementById('emergency-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const reports = GridApp.get('reports', []);
+      const newId = `GG-2026-EMERGENCY-${Math.floor(100 + Math.random() * 900)}`;
+      const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 16);
+
+      const newReport = {
+        id: newId,
+        type: document.getElementById('em-hazard-type').value,
+        severity: 'Emergency',
+        title: `EMERGENCY: ${document.getElementById('em-hazard-type').value}`,
+        description: document.getElementById('em-notes').value || 'Immediate priority emergency dispatch requested.',
+        location: document.getElementById('em-location').value,
+        lat: '41.4089',
+        lng: '-75.6624',
+        status: 'Reported',
+        date: nowStr,
+        contactPhone: document.getElementById('em-phone').value,
+        source: 'Citizen',
+        timeline: [
+          { status: 'Reported', time: nowStr, note: 'CRITICAL EMERGENCY FAST-PATH TRIGGERED. Priority 1 Dispatch.' },
+          { status: 'Dispatched', time: nowStr, note: 'Automated rapid response crew alerted via emergency beacon.' }
+        ]
+      };
+
+      reports.unshift(newReport);
+      GridApp.set('reports', reports);
+
+      const notifications = GridApp.get('notifications', []);
+      notifications.unshift({
+        id: Date.now(),
+        title: `EMERGENCY DISPATCH TRIGGERED - ${newId}`,
+        message: `Priority response unit dispatched to ${newReport.location}.`,
+        time: nowStr,
+        unread: true,
+        urgent: true
+      });
+      GridApp.set('notifications', notifications);
+
+      window.location.href = `status-tracking.html?id=${newId}`;
+    });
+
+    if (window.lucide) lucide.createIcons();
+  </script>
+</body>
+</html>
