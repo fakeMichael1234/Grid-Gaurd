@@ -104,7 +104,7 @@ export default function Home() {
         <motion.div {...fadeUp(0.45)} className="flex flex-col items-center gap-6">
           <LiquidMetalButton
             label="Login to Portal"
-            onClick={() => { window.location.href = 'http://localhost:8080/login.html' }}
+            onClick={() => { window.location.href = '/login.html' }}
           />
           <p className="text-[11px] text-white/20 tracking-widest uppercase">
             Secured · TLS 1.3 · End-to-end encrypted

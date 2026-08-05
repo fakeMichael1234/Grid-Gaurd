@@ -251,7 +251,7 @@ function renderAppHeader(activeKey) {
   const headerHTML = `
     <header class="top-nav" style="${isAdmin ? 'background-color: #060d17; border-bottom: 3px solid #2563eb;' : ''}">
       <div class="nav-container">
-        <a href="${isAdmin ? 'admin-faults.html' : 'index.html'}" class="brand" style="display: flex; align-items: center; gap: 0.75rem;">
+        <a href="${isAdmin ? 'admin-faults.html' : 'portal-dashboard.html'}" class="brand" style="display: flex; align-items: center; gap: 0.75rem;">
           <img src="logo_v2.png" alt="Grid Guard Logo" style="height: 42px; width: 42px; object-fit: contain; border-radius: 50%; border: 2px solid #2563eb; background: #0f172a; padding: 2px;" />
           <div>
             <span class="brand-title" style="font-size: 1.25rem; font-weight: 700; color: #ffffff;">Grid Guard ${isAdmin ? '<span class="admin-badge">OPS CENTER</span>' : ''}</span>
@@ -261,7 +261,7 @@ function renderAppHeader(activeKey) {
 
         <nav class="nav-links">
           ${!isAdmin ? `
-            <a href="index.html" class="nav-link ${activeKey === 'dashboard' ? 'active' : ''}"><i data-lucide="layout-dashboard"></i> Overview</a>
+            <a href="portal-dashboard.html" class="nav-link ${activeKey === 'dashboard' ? 'active' : ''}"><i data-lucide="layout-dashboard"></i> Overview</a>
             <a href="report-issue.html" class="nav-link ${activeKey === 'report' ? 'active' : ''}"><i data-lucide="file-plus"></i> Report Issue</a>
             <a href="history.html" class="nav-link ${activeKey === 'history' ? 'active' : ''}"><i data-lucide="history"></i> My Reports</a>
             <a href="notifications.html" class="nav-link ${activeKey === 'notifications' ? 'active' : ''}">
