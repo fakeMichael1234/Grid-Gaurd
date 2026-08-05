@@ -1,0 +1,10 @@
+[build]
+  # Tell Netlify to run the build from the root, but we'll manually change into the Next.js folder
+  command = "cd gridguard-landing-page && npm install && npm run build && cp -r ../*.html ../*.js ../*.css ../*.png ./out/ 2>/dev/null || true"
+  
+  # The output folder we want to publish
+  publish = "gridguard-landing-page/out"
+
+[build.environment]
+  # Required for Next.js static export
+  NEXT_PRIVATE_LOCAL_WEBPACK = "true"
