@@ -3,97 +3,439 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal Gateway - Grid Guard Unified System</title>
+  <title>Portal Gateway — GRIDGUARD Unified System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="admin.css" />
   <script src="https://unpkg.com/lucide@latest"></script>
-</head>
-<body class="admin-shell" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #0b1727; padding: 2rem 1rem;">
+  <style>
+    .login-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
 
-  <div style="text-align: center; margin-bottom: 2.5rem; max-width: 600px;">
-    <div style="display: inline-flex; align-items: center; gap: 0.75rem; background: #1e293b; padding: 0.5rem 1.25rem; border-radius: 99px; border: 1px solid #334155; margin-bottom: 1rem;">
-      <img src="logo_v2.png" style="height: 28px; width: 28px; border-radius: 50%;" />
-      <span style="color: #cbd5e1; font-weight: 600; font-size: 0.875rem; letter-spacing: 0.05em; text-transform: uppercase;">Grid Guard Unified Gateway</span>
+    /* Floating Electric Particles */
+    .login-page::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(2px 2px at 20% 30%, rgba(0, 191, 255, 0.3), transparent),
+        radial-gradient(2px 2px at 70% 20%, rgba(0, 255, 157, 0.2), transparent),
+        radial-gradient(2px 2px at 40% 70%, rgba(0, 229, 255, 0.25), transparent),
+        radial-gradient(2px 2px at 80% 80%, rgba(0, 191, 255, 0.2), transparent),
+        radial-gradient(2px 2px at 10% 60%, rgba(0, 255, 157, 0.15), transparent),
+        radial-gradient(2px 2px at 90% 40%, rgba(0, 191, 255, 0.2), transparent),
+        radial-gradient(3px 3px at 50% 50%, rgba(0, 229, 255, 0.15), transparent);
+      animation: float 12s ease-in-out infinite;
+    }
+
+    .gateway-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(0, 191, 255, 0.06);
+      padding: 0.6rem 1.5rem;
+      border-radius: 99px;
+      border: 1px solid rgba(0, 191, 255, 0.15);
+      margin-bottom: 1.25rem;
+      backdrop-filter: blur(12px);
+      animation: fadeSlideUp 0.6s ease-out;
+    }
+
+    .gateway-badge img {
+      height: 30px;
+      width: 30px;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 191, 255, 0.3);
+      box-shadow: 0 0 12px rgba(0, 191, 255, 0.2);
+    }
+
+    .gateway-badge span {
+      color: #00E5FF;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .gateway-title {
+      font-size: 2.25rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #ffffff 0%, #00BFFF 50%, #00FF9D 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeSlideUp 0.7s ease-out;
+    }
+
+    .gateway-subtitle {
+      font-size: 0.95rem;
+      color: #64748b;
+      font-weight: 400;
+      animation: fadeSlideUp 0.8s ease-out;
+    }
+
+    .login-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 2rem;
+      width: 100%;
+      max-width: 920px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-card {
+      background: rgba(10, 22, 40, 0.6);
+      backdrop-filter: blur(20px) saturate(1.5);
+      -webkit-backdrop-filter: blur(20px) saturate(1.5);
+      border: 1px solid rgba(0, 191, 255, 0.1);
+      color: white;
+      padding: 2.25rem;
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), 0 0 1px rgba(0, 191, 255, 0.15);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: fadeSlideUp 0.8s ease-out;
+    }
+
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--glow-color, rgba(0, 191, 255, 0.4)), transparent);
+      animation: shimmer 3s linear infinite;
+      background-size: 200% auto;
+    }
+
+    .login-card:hover {
+      border-color: rgba(0, 191, 255, 0.25);
+      box-shadow: 0 16px 50px rgba(0, 191, 255, 0.1), 0 0 2px rgba(0, 229, 255, 0.2);
+      transform: translateY(-4px);
+    }
+
+    .login-card.admin-variant {
+      --glow-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .login-card.admin-variant:hover {
+      border-color: rgba(239, 68, 68, 0.2);
+      box-shadow: 0 16px 50px rgba(239, 68, 68, 0.08), 0 0 2px rgba(239, 68, 68, 0.15);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .card-header-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px var(--icon-glow);
+    }
+
+    .card-header-icon.citizen {
+      background: linear-gradient(135deg, #00BFFF, #0077b6);
+      --icon-glow: rgba(0, 191, 255, 0.3);
+    }
+
+    .card-header-icon.admin {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      --icon-glow: rgba(239, 68, 68, 0.3);
+    }
+
+    .card-header-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #f8fafc;
+      letter-spacing: -0.01em;
+    }
+
+    .card-header-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .card-header-label.citizen { color: #00E5FF; }
+    .card-header-label.admin { color: #f87171; }
+
+    .login-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(5, 10, 20, 0.6);
+      border: 1px solid rgba(0, 191, 255, 0.1);
+      border-radius: 10px;
+      color: #f8fafc;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: all 0.25s ease;
+    }
+
+    .login-input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(0, 191, 255, 0.1), 0 0 12px rgba(0, 191, 255, 0.06);
+      background: rgba(5, 10, 20, 0.85);
+    }
+
+    .login-label {
+      color: #94a3b8;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.02em;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-btn.citizen-btn {
+      background: linear-gradient(135deg, #00BFFF, #0077b6);
+      color: white;
+      box-shadow: 0 0 20px rgba(0, 191, 255, 0.2);
+    }
+
+    .login-btn.citizen-btn:hover {
+      box-shadow: 0 0 30px rgba(0, 191, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .login-btn.admin-btn {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      color: white;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+    }
+
+    .login-btn.admin-btn:hover {
+      box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .card-footer-text {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 0.82rem;
+      color: #64748b;
+    }
+
+    .card-footer-text a {
+      color: #00E5FF;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .card-footer-text a:hover {
+      color: #00BFFF;
+      text-decoration: underline;
+    }
+
+    /* Connection Line Decoration */
+    .connection-line {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 2px;
+      height: 60px;
+      background: linear-gradient(180deg, transparent, rgba(0, 191, 255, 0.2), transparent);
+      display: none;
+    }
+
+    @media (min-width: 760px) {
+      .connection-line {
+        display: block;
+        width: 60px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(0, 191, 255, 0.15), transparent);
+      }
+    }
+
+    /* Bottom Status Bar */
+    .login-status-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      background: rgba(3, 6, 13, 0.85);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(0, 191, 255, 0.08);
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      color: #475569;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #00FF9D;
+      margin-right: 0.5rem;
+      box-shadow: 0 0 8px rgba(0, 255, 157, 0.4);
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 4px rgba(0, 255, 157, 0.3); }
+      50% { box-shadow: 0 0 12px rgba(0, 255, 157, 0.6); }
+    }
+
+    @media (max-width: 768px) {
+      .login-grid {
+        grid-template-columns: 1fr;
+        max-width: 420px;
+      }
+      .gateway-title {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body class="admin-shell">
+  <div class="login-page">
+    <div style="text-align: center; margin-bottom: 2.5rem; max-width: 620px; position: relative; z-index: 1;">
+      <div class="gateway-badge">
+        <img src="logo_v2.png" alt="GridGuard" />
+        <span>GRIDGUARD Unified Gateway</span>
+      </div>
+      <h1 class="gateway-title">Smart Grid Infrastructure<br/>& Telemetry Portal</h1>
+      <p class="gateway-subtitle">Select authorization level to access the platform.</p>
     </div>
-    <h1 style="font-size: 2rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.5rem;">Municipal Infrastructure & Telemetry Portal</h1>
-    <p style="font-size: 0.95rem; color: #94a3b8;">Select authorization level to sign in to the platform.</p>
+
+    <div class="login-grid">
+      <!-- User / Citizen Portal Login Card -->
+      <div class="login-card">
+        <div>
+          <div class="card-header">
+            <div class="card-header-icon citizen">
+              <i data-lucide="user" style="color: white; width: 20px; height: 20px;"></i>
+            </div>
+            <div>
+              <div class="card-header-title">Citizen Login</div>
+              <span class="card-header-label citizen">Smart Grid Citizen Portal</span>
+            </div>
+          </div>
+
+          <form id="form-login-citizen">
+            <div style="margin-bottom: 1rem;">
+              <label class="login-label">Citizen Email / Account ID</label>
+              <input type="email" id="citizen-email" required value="m.scott@scranton.gov" class="login-input" />
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+              <label class="login-label">Password</label>
+              <input type="password" id="citizen-pass" required value="password123" class="login-input" />
+            </div>
+
+            <button type="submit" class="login-btn citizen-btn">
+              <i data-lucide="log-in" style="width: 16px; height: 16px;"></i> Citizen Login
+            </button>
+          </form>
+        </div>
+
+        <div class="card-footer-text">
+          New user? <a href="register.html">Register Citizen Account</a>
+        </div>
+      </div>
+
+      <!-- Admin / Operations Center Login Card -->
+      <div class="login-card admin-variant">
+        <div>
+          <div class="card-header">
+            <div class="card-header-icon admin">
+              <i data-lucide="shield-check" style="color: white; width: 20px; height: 20px;"></i>
+            </div>
+            <div>
+              <div class="card-header-title">Admin Login</div>
+              <span class="card-header-label admin">Operations Center & Telemetry Hub</span>
+            </div>
+          </div>
+
+          <form id="form-login-admin">
+            <div style="margin-bottom: 1rem;">
+              <label class="login-label">Ops Dispatcher Username / ID</label>
+              <input type="text" id="admin-user" required value="ops_dispatcher_01" class="login-input" />
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+              <label class="login-label">Security Key</label>
+              <input type="password" id="admin-pass" required value="adminpass2026" class="login-input" />
+            </div>
+
+            <button type="submit" class="login-btn admin-btn">
+              <i data-lucide="lock" style="width: 16px; height: 16px;"></i> Admin Login
+            </button>
+          </form>
+        </div>
+
+        <div class="card-footer-text" style="color: #475569;">
+          <i data-lucide="shield" style="width: 12px; height: 12px; display: inline;"></i>
+          Authorized Infrastructure Operations Personnel Only.
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2rem; width: 100%; max-width: 900px;">
-    
-    <!-- User / Citizen Portal Login Card -->
-    <div class="auth-container" style="background: #0f172a; border: 1px solid #1e293b; color: white; padding: 2rem; border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between;">
-      <div>
-        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #1e293b;">
-          <div style="background: #2563eb; color: white; width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-            <i data-lucide="user"></i>
-          </div>
-          <div>
-            <h2 style="font-size: 1.2rem; font-weight: 700; color: #f8fafc;">User Login</h2>
-            <span style="font-size: 0.75rem; color: #38bdf8;">Citizen Infrastructure Portal</span>
-          </div>
-        </div>
-
-        <form id="form-login-citizen">
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">Citizen Email / Account ID</label>
-            <input type="email" id="citizen-email" required value="m.scott@scranton.gov" style="background: #1e293b; border-color: #334155; color: white; width: 100%; padding: 0.6rem; border-radius: 4px;" />
-          </div>
-
-          <div class="form-group" style="margin-bottom: 1.25rem;">
-            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">Password</label>
-            <input type="password" id="citizen-pass" required value="password123" style="background: #1e293b; border-color: #334155; color: white; width: 100%; padding: 0.6rem; border-radius: 4px;" />
-          </div>
-
-          <button type="submit" class="btn btn-primary btn-block btn-lg" style="background: #2563eb; border: none; width: 100%; padding: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 4px;">
-            <i data-lucide="log-in"></i> User Login
-          </button>
-        </form>
-      </div>
-
-      <div style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #1e293b; font-size: 0.85rem; color: #94a3b8;">
-        New user? <a href="register.html" style="color: #38bdf8; font-weight: 600; text-decoration: none;">Register Citizen Account</a>
-      </div>
-    </div>
-
-    <!-- Admin / Operations Center Login Card -->
-    <div class="auth-container" style="background: #0f172a; border: 1px solid #1e293b; color: white; padding: 2rem; border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between;">
-      <div>
-        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #1e293b;">
-          <div style="background: #dc2626; color: white; width: 40px; height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-            <i data-lucide="shield-check"></i>
-          </div>
-          <div>
-            <h2 style="font-size: 1.2rem; font-weight: 700; color: #f8fafc;">Admin Login</h2>
-            <span style="font-size: 0.75rem; color: #f87171;">Operations Center & Telemetry Hub</span>
-          </div>
-        </div>
-
-        <form id="form-login-admin">
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">Ops Dispatcher Username / ID</label>
-            <input type="text" id="admin-user" required value="ops_dispatcher_01" style="background: #1e293b; border-color: #334155; color: white; width: 100%; padding: 0.6rem; border-radius: 4px;" />
-          </div>
-
-          <div class="form-group" style="margin-bottom: 1.25rem;">
-            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">Security Key</label>
-            <input type="password" id="admin-pass" required value="adminpass2026" style="background: #1e293b; border-color: #334155; color: white; width: 100%; padding: 0.6rem; border-radius: 4px;" />
-          </div>
-
-          <button type="submit" class="btn btn-danger btn-block btn-lg" style="background: #dc2626; border: none; width: 100%; padding: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 4px;">
-            <i data-lucide="lock"></i> Admin Login
-          </button>
-        </form>
-      </div>
-
-      <div style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #1e293b; font-size: 0.75rem; color: #64748b;">
-        Authorized Infrastructure Operations Personnel Only.
-      </div>
-    </div>
-
+  <!-- Bottom Status Bar -->
+  <div class="login-status-bar">
+    <span><span class="status-dot"></span>GRIDGUARD Core Engine: All Systems Operational</span>
+    <span style="font-family: 'JetBrains Mono', monospace; color: #334155;">v4.2.0 | TLS 1.3 Encrypted</span>
   </div>
 
   <script src="common.js"></script>

@@ -13,12 +13,12 @@
 </head>
 <body class="admin-shell">
   <main class="main-content" style="max-width: 1200px;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid #1e293b; padding-bottom: 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
       <div>
         <h1 class="page-title" style="color: #f8fafc;" id="pole-detail-title">Pole Telemetry Detail</h1>
         <p style="color: #94a3b8; font-size: 0.875rem;" id="pole-detail-subtitle">Loading pole sensor telemetry...</p>
       </div>
-      <a href="admin-incident-creation.html" class="btn btn-secondary btn-sm" style="background: #1e293b; border-color: #334155; color: #f8fafc;">
+      <a href="admin-incident-creation.html" class="btn btn-secondary btn-sm" style="background: rgba(0, 191, 255, 0.1); border: 1px solid var(--border-color); color: var(--accent-cyan);">
         <i data-lucide="arrow-left"></i> Back to Sensor Alerts
       </a>
     </div>
@@ -47,12 +47,12 @@
           <div class="admin-card">
             <h3 style="font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 1rem;">Electrical Telemetry Readouts</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-              <div style="background: #060d17; padding: 1rem; border-radius: 6px; border: 1px solid #1e293b;">
+              <div style="background: var(--bg-main); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color);">
                 <span style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; display: block;">Bus Voltage</span>
                 <span style="font-size: 1.75rem; font-family: monospace; font-weight: 700; ${pole.voltage < 200 ? 'color: #fca5a5;' : 'color: #6ee7b7;'}">${pole.voltage} V</span>
                 <span style="font-size: 0.7rem; color: #94a3b8; display: block; margin-top: 0.25rem;">Nominal Standard: 240V AC</span>
               </div>
-              <div style="background: #060d17; padding: 1rem; border-radius: 6px; border: 1px solid #1e293b;">
+              <div style="background: var(--bg-main); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color);">
                 <span style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; display: block;">Phase Current</span>
                 <span style="font-size: 1.75rem; font-family: monospace; font-weight: 700; ${pole.current > 70 ? 'color: #fde047;' : 'color: #6ee7b7;'}">${pole.current} A</span>
                 <span style="font-size: 0.7rem; color: #94a3b8; display: block; margin-top: 0.25rem;">Max Continuous Rating: 65A</span>
@@ -63,12 +63,12 @@
           <div class="admin-card">
             <h3 style="font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 1rem;">Structural & Thermal Sensors</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-              <div style="background: #060d17; padding: 1rem; border-radius: 6px; border: 1px solid #1e293b;">
+              <div style="background: var(--bg-main); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color);">
                 <span style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; display: block;">Pole Gyro Tilt Angle</span>
                 <span style="font-size: 1.75rem; font-family: monospace; font-weight: 700; ${pole.tilt > 10 ? 'color: #fca5a5;' : 'color: #6ee7b7;'}">${pole.tilt}</span>
                 <span style="font-size: 0.7rem; color: #94a3b8; display: block; margin-top: 0.25rem;">Hazard Threshold: >10.0</span>
               </div>
-              <div style="background: #060d17; padding: 1rem; border-radius: 6px; border: 1px solid #1e293b;">
+              <div style="background: var(--bg-main); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color);">
                 <span style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; display: block;">Transformer Temp</span>
                 <span style="font-size: 1.75rem; font-family: monospace; font-weight: 700; ${pole.temp > 90 ? 'color: #fca5a5;' : 'color: #6ee7b7;'}">${pole.temp} C</span>
                 <span style="font-size: 0.7rem; color: #94a3b8; display: block; margin-top: 0.25rem;">Critical Limit: 85C</span>

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Zap, Globe, Mail, Link as LinkIcon } from 'lucide-react'
+import { Zap, Activity, Network, Code } from 'lucide-react'
 
 const footerLinks = {
   Product: ['Features', 'Pricing', 'Integrations', 'Changelog', 'API Docs'],
@@ -26,9 +26,9 @@ export default function Footer() {
               AI-powered grid intelligence platform. Monitor, predict, and prevent electrical infrastructure failures at scale.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="text-gray-500 hover:text-cyan-400 transition-colors"><Mail className="w-5 h-5" /></a>
-              <a href="#" className="text-gray-500 hover:text-cyan-400 transition-colors"><LinkIcon className="w-5 h-5" /></a>
-              <a href="#" className="text-gray-500 hover:text-cyan-400 transition-colors"><Globe className="w-5 h-5" /></a>
+              <a href="#" className="text-gray-500 hover:text-cyan-400 transition-colors"><Network className="w-5 h-5" /></a>
+              <a href="#" className="text-gray-500 hover:text-cyan-400 transition-colors"><Activity className="w-5 h-5" /></a>
+              <a href="#" className="text-gray-500 hover:text-cyan-400 transition-colors"><Code className="w-5 h-5" /></a>
             </div>
           </div>
 

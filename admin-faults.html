@@ -13,14 +13,14 @@
 </head>
 <body class="admin-shell">
   <main class="main-content" style="max-width: 1350px;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid #1e293b; padding-bottom: 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
       <div>
         <h1 class="page-title" style="color: #f8fafc;">Complaints Ledger</h1>
         <p style="color: #94a3b8; font-size: 0.875rem;">Live feed of real citizen-submitted defect reports and emergency fast-path requests.</p>
       </div>
       <div style="display: flex; gap: 0.75rem; align-items: center;">
         <label for="status-filter" style="font-size: 0.85rem; color: #94a3b8; font-weight: 600;">Filter Status:</label>
-        <select id="status-filter" style="background: #1e293b; border-color: #334155; color: white; padding: 0.4rem 0.75rem; border-radius: 4px; font-size: 0.85rem;">
+        <select id="status-filter" style="background: var(--bg-card); border: 1px solid var(--border-color); color: white; padding: 0.4rem 0.75rem; border-radius: 8px; font-size: 0.85rem; backdrop-filter: blur(8px);">
           <option value="ALL">All Complaints</option>
           <option value="Reported">Reported</option>
           <option value="Under Review">Under Review</option>
@@ -89,7 +89,7 @@
       tbody.innerHTML = filtered.map(r => {
         const mediaCount = r.attachments ? r.attachments.length : 0;
         const mediaLabel = mediaCount > 0 
-          ? `<span class="badge" style="background: #1e293b; color: #38bdf8; border: 1px solid #334155;"><i data-lucide="camera" style="width: 12px; height: 12px; margin-right: 4px;"></i> ${mediaCount} File${mediaCount > 1 ? 's' : ''} Attached</span>`
+          ? `<span class="badge" style="background: rgba(0, 191, 255, 0.1); color: var(--accent-cyan); border: 1px solid var(--border-color);"><i data-lucide="camera" style="width: 12px; height: 12px; margin-right: 4px;"></i> ${mediaCount} File${mediaCount > 1 ? 's' : ''} Attached</span>`
           : `<span style="color: #64748b; font-size: 0.8rem;">No Attachment</span>`;
 
         return `
@@ -113,7 +113,7 @@
             <td>
               <div style="display: flex; gap: 0.35rem;">
                 ${r.status !== 'Resolved' ? `
-                  <button class="btn btn-secondary btn-sm" style="background: #1e293b; color: #38bdf8; border-color: #334155; padding: 2px 8px;" onclick="updateComplaintStatus('${r.id}', 'Dispatched')">Dispatch Unit</button>
+                  <button class="btn btn-secondary btn-sm" style="background: rgba(0, 191, 255, 0.1); color: var(--accent-cyan); border: 1px solid var(--border-color); padding: 2px 8px;" onclick="updateComplaintStatus('${r.id}', 'Dispatched')">Dispatch Unit</button>
                   <button class="btn btn-secondary btn-sm" style="background: #064e3b; color: #6ee7b7; border: none; padding: 2px 8px;" onclick="updateComplaintStatus('${r.id}', 'Resolved')">Resolve</button>
                 ` : `
                   <span style="font-size: 0.75rem; color: #64748b;">Closed</span>

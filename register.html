@@ -3,61 +3,209 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Citizen Registration - Grid Guard Portal</title>
+  <title>Citizen Registration — GRIDGUARD Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="admin.css" />
   <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .register-page {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .register-card {
+      max-width: 500px;
+      width: 100%;
+      background: rgba(10, 22, 40, 0.6);
+      backdrop-filter: blur(20px) saturate(1.5);
+      -webkit-backdrop-filter: blur(20px) saturate(1.5);
+      border: 1px solid rgba(0, 191, 255, 0.1);
+      color: white;
+      padding: 2.75rem;
+      border-radius: 18px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), 0 0 60px rgba(0, 191, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+      animation: fadeSlideUp 0.6s ease-out;
+    }
+
+    .register-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0, 191, 255, 0.4), rgba(0, 255, 157, 0.3), transparent);
+      animation: shimmer 3s linear infinite;
+      background-size: 200% auto;
+    }
+
+    .register-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .register-header img {
+      height: 52px;
+      width: 52px;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 191, 255, 0.3);
+      margin-bottom: 0.75rem;
+      box-shadow: 0 0 20px rgba(0, 191, 255, 0.2);
+    }
+
+    .register-header h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff, #00E5FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.35rem;
+    }
+
+    .register-header p {
+      font-size: 0.85rem;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .reg-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(5, 10, 20, 0.6);
+      border: 1px solid rgba(0, 191, 255, 0.1);
+      border-radius: 10px;
+      color: #f8fafc;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: all 0.25s ease;
+    }
+
+    .reg-input:focus {
+      outline: none;
+      border-color: var(--accent-blue, #00BFFF);
+      box-shadow: 0 0 0 3px rgba(0, 191, 255, 0.1), 0 0 12px rgba(0, 191, 255, 0.06);
+      background: rgba(5, 10, 20, 0.85);
+    }
+
+    .reg-input::placeholder {
+      color: #475569;
+    }
+
+    .reg-label {
+      color: #94a3b8;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    .reg-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .reg-submit {
+      width: 100%;
+      padding: 0.85rem;
+      background: linear-gradient(135deg, #00BFFF, #0077b6);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 20px rgba(0, 191, 255, 0.2);
+      margin-top: 1.5rem;
+      font-family: inherit;
+    }
+
+    .reg-submit:hover {
+      box-shadow: 0 0 30px rgba(0, 191, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .reg-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    .reg-footer a {
+      color: #00E5FF;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .reg-footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
-<body class="admin-shell" style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0b1727;">
-  <div class="auth-container" style="max-width: 480px; background: #0f172a; border: 1px solid #1e293b; color: white; padding: 2.5rem; border-radius: 8px;">
-    <div style="text-align: center; margin-bottom: 1.5rem;">
-      <img src="logo_v2.png" style="height: 48px; width: 48px; border-radius: 50%; border: 2px solid #2563eb; margin-bottom: 0.5rem;" />
-      <h2 style="font-size: 1.25rem; color: #f8fafc;">Create Citizen Account</h2>
-      <p style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.25rem;">Verify municipal residency to log infrastructure defects and receive emergency dispatches.</p>
-    </div>
-
-    <form id="register-form">
-      <div class="form-group">
-        <label for="reg-name" style="color: #cbd5e1;">Full Legal Name *</label>
-        <input type="text" id="reg-name" required placeholder="Jane Doe" style="background: #1e293b; border-color: #334155; color: white;" />
+<body class="admin-shell">
+  <div class="register-page">
+    <div class="register-card">
+      <div class="register-header">
+        <img src="logo_v2.png" alt="GridGuard" />
+        <h2>Create Citizen Account</h2>
+        <p>Verify municipal residency to log infrastructure defects and receive emergency dispatches.</p>
       </div>
 
-      <div class="form-group">
-        <label for="reg-email" style="color: #cbd5e1;">Email Address *</label>
-        <input type="email" id="reg-email" required placeholder="jane.doe@example.com" style="background: #1e293b; border-color: #334155; color: white;" />
+      <form id="register-form">
+        <div class="reg-group">
+          <label for="reg-name" class="reg-label">Full Legal Name *</label>
+          <input type="text" id="reg-name" required placeholder="Jane Doe" class="reg-input" />
+        </div>
+
+        <div class="reg-group">
+          <label for="reg-email" class="reg-label">Email Address *</label>
+          <input type="email" id="reg-email" required placeholder="jane.doe@example.com" class="reg-input" />
+        </div>
+
+        <div class="reg-group">
+          <label for="reg-phone" class="reg-label">Phone Number (for SMS Outage Alerts) *</label>
+          <input type="tel" id="reg-phone" required placeholder="+1 (555) 019-2831" class="reg-input" />
+        </div>
+
+        <div class="reg-group">
+          <label for="reg-ward" class="reg-label">Municipal Ward / Neighborhood *</label>
+          <select id="reg-ward" required class="reg-input">
+            <option value="">Select Ward...</option>
+            <option value="Ward 1 - Central Business">Ward 1 - Central Business</option>
+            <option value="Ward 2 - East Industrial">Ward 2 - East Industrial Park</option>
+            <option value="Ward 3 - West Heights">Ward 3 - West Heights</option>
+            <option value="Ward 4 - Elm Residential">Ward 4 - Elm Residential</option>
+          </select>
+        </div>
+
+        <div class="reg-group">
+          <label for="reg-password" class="reg-label">Create Password *</label>
+          <input type="password" id="reg-password" required placeholder="Minimum 8 characters" class="reg-input" />
+        </div>
+
+        <button type="submit" class="reg-submit">
+          <i data-lucide="check-circle"></i> Complete Registration
+        </button>
+      </form>
+
+      <div class="reg-footer">
+        Already registered? <a href="login.html">Sign In</a>
       </div>
-
-      <div class="form-group">
-        <label for="reg-phone" style="color: #cbd5e1;">Phone Number (for SMS Outage Alerts) *</label>
-        <input type="tel" id="reg-phone" required placeholder="+1 (555) 019-2831" style="background: #1e293b; border-color: #334155; color: white;" />
-      </div>
-
-      <div class="form-group">
-        <label for="reg-ward" style="color: #cbd5e1;">Municipal Ward / Neighborhood *</label>
-        <select id="reg-ward" required style="background: #1e293b; border-color: #334155; color: white;">
-          <option value="">Select Ward...</option>
-          <option value="Ward 1 - Central Business">Ward 1 - Central Business</option>
-          <option value="Ward 2 - East Industrial">Ward 2 - East Industrial Park</option>
-          <option value="Ward 3 - West Heights">Ward 3 - West Heights</option>
-          <option value="Ward 4 - Elm Residential">Ward 4 - Elm Residential</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="reg-password" style="color: #cbd5e1;">Create Password *</label>
-        <input type="password" id="reg-password" required placeholder="Minimum 8 characters" style="background: #1e293b; border-color: #334155; color: white;" />
-      </div>
-
-      <button type="submit" class="btn btn-primary btn-block btn-lg" style="background: #2563eb; border: none; margin-top: 1rem;">
-        <i data-lucide="check-circle"></i> Complete Registration
-      </button>
-    </form>
-
-    <div style="text-align: center; margin-top: 1.25rem; font-size: 0.85rem; color: #94a3b8;">
-      Already registered? <a href="login.html" style="color: #38bdf8; font-weight: 600; text-decoration: none;">Sign In</a>
     </div>
   </div>
 

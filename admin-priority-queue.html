@@ -13,14 +13,14 @@
 </head>
 <body class="admin-shell">
   <main class="main-content" style="max-width: 1300px;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid #1e293b; padding-bottom: 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
       <div>
         <h1 class="page-title" style="color: #f8fafc;">Operational Dispatch Priority Queue</h1>
         <p style="color: #94a3b8; font-size: 0.875rem;">Unified queue merging live citizen complaints and hardware pole anomalies into actionable dispatch units.</p>
       </div>
       <div style="display: flex; gap: 0.75rem; align-items: center;">
         <label style="font-size: 0.85rem; color: #94a3b8; font-weight: 600;">Filter Priority:</label>
-        <select id="queue-filter" style="background: #1e293b; border-color: #334155; color: white; padding: 0.4rem; border-radius: 4px;">
+        <select id="queue-filter" style="background: var(--bg-card); border: 1px solid var(--border-color); color: white; padding: 0.4rem; border-radius: 8px; backdrop-filter: blur(8px);">
           <option value="ALL">All Priorities</option>
           <option value="Emergency">Emergency / Critical</option>
           <option value="High">High</option>
@@ -80,7 +80,7 @@
           </div>
 
           <!-- Ops Dispatcher Status Controller Bar -->
-          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #1e293b; padding-top: 0.75rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
             <span style="font-size: 0.8rem; color: #94a3b8;"><i data-lucide="shield-alert"></i> Admin State Sync Active</span>
             <div style="display: flex; gap: 0.5rem;">
               <button class="btn btn-secondary btn-sm" onclick="changeStatus('${r.id}', 'Under Review')" style="background: #1e293b; color: #fde047; border-color: #334155;">Mark Under Review</button>

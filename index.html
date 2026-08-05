@@ -3,20 +3,124 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview - Grid Guard Citizen Portal</title>
+  <title>Operations Overview — GRIDGUARD Citizen Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="admin.css" />
   <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .stat-card {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin: 0;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 191, 255, 0.12), 0 0 1px rgba(0, 229, 255, 0.3);
+    }
+
+    .stat-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-icon.total {
+      background: linear-gradient(135deg, rgba(0, 191, 255, 0.2), rgba(0, 119, 182, 0.15));
+      color: #00BFFF;
+      box-shadow: 0 0 15px rgba(0, 191, 255, 0.15);
+    }
+
+    .stat-icon.pending {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(217, 119, 6, 0.15));
+      color: #fbbf24;
+      box-shadow: 0 0 15px rgba(251, 191, 36, 0.15);
+    }
+
+    .stat-icon.resolved {
+      background: linear-gradient(135deg, rgba(0, 255, 157, 0.15), rgba(5, 150, 105, 0.12));
+      color: #00FF9D;
+      box-shadow: 0 0 15px rgba(0, 255, 157, 0.12);
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 800;
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.02em;
+      color: #f8fafc;
+    }
+
+    .stat-label {
+      font-size: 0.82rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .advisory-card {
+      border-left: 4px solid var(--accent-blue);
+      position: relative;
+    }
+
+    .advisory-card::after {
+      content: '';
+      position: absolute;
+      left: -4px;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, #00BFFF, #00FF9D);
+      border-radius: 0 0 0 0;
+    }
+
+    .advisory-icon {
+      color: #00BFFF;
+      filter: drop-shadow(0 0 6px rgba(0, 191, 255, 0.4));
+    }
+
+    .advisory-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .advisory-text {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #f8fafc;
+      letter-spacing: -0.01em;
+    }
+  </style>
 </head>
 <body>
   <main class="main-content">
     <div class="page-header">
       <div>
-        <h1 class="page-title">Citizen Infrastructure Operations Overview</h1>
-        <p class="page-desc">Track active grid reports, view municipal response status, and report new issues.</p>
+        <h1 class="page-title">Citizen Infrastructure Overview</h1>
+        <p class="page-desc">Track active grid reports, view response status, and report new issues.</p>
       </div>
       <div style="display: flex; gap: 0.75rem;">
         <a href="report-issue.html" class="btn btn-primary">
@@ -28,54 +132,54 @@
       </div>
     </div>
 
-    <!-- Quick Stat Overview Cards -->
-    <div class="grid-2" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 1.5rem;">
-      <div class="card" style="display: flex; align-items: center; gap: 1rem; margin: 0;">
-        <div style="background: #2563eb; color: white; width: 48px; height: 48px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+    <!-- Quick Stats -->
+    <div class="grid-2" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-bottom: 2rem;">
+      <div class="card stat-card">
+        <div class="stat-icon total">
           <i data-lucide="file-text"></i>
         </div>
         <div>
-          <span style="font-size: 1.5rem; font-weight: 700; display: block;" id="dash-total-count">0</span>
-          <span style="font-size: 0.85rem; color: var(--text-muted);">Total Incidents Filed</span>
+          <span class="stat-value" id="dash-total-count">0</span>
+          <span class="stat-label">Total Incidents Filed</span>
         </div>
       </div>
 
-      <div class="card" style="display: flex; align-items: center; gap: 1rem; margin: 0;">
-        <div style="background: #d97706; color: white; width: 48px; height: 48px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+      <div class="card stat-card">
+        <div class="stat-icon pending">
           <i data-lucide="clock"></i>
         </div>
         <div>
-          <span style="font-size: 1.5rem; font-weight: 700; display: block;" id="dash-pending-count">0</span>
-          <span style="font-size: 0.85rem; color: var(--text-muted);">Pending / In Dispatch</span>
+          <span class="stat-value" id="dash-pending-count">0</span>
+          <span class="stat-label">Pending / In Dispatch</span>
         </div>
       </div>
 
-      <div class="card" style="display: flex; align-items: center; gap: 1rem; margin: 0;">
-        <div style="background: #059669; color: white; width: 48px; height: 48px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+      <div class="card stat-card">
+        <div class="stat-icon resolved">
           <i data-lucide="check-circle-2"></i>
         </div>
         <div>
-          <span style="font-size: 1.5rem; font-weight: 700; display: block;" id="dash-resolved-count">0</span>
-          <span style="font-size: 0.85rem; color: var(--text-muted);">Resolved Incidents</span>
+          <span class="stat-value" id="dash-resolved-count">0</span>
+          <span class="stat-label">Resolved Incidents</span>
         </div>
       </div>
     </div>
 
-    <!-- Active Public Advisory Box -->
-    <div class="card" style="border-left: 4px solid var(--accent-blue);">
-      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-        <i data-lucide="radio" style="color: #2563eb;"></i>
-        <h3 style="font-size: 1rem; font-weight: 600;">Active Grid Advisory - Ward 4 Sector</h3>
+    <!-- Active Advisory -->
+    <div class="card advisory-card">
+      <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 0.5rem;">
+        <i data-lucide="radio" class="advisory-icon"></i>
+        <h3 class="advisory-title">Active Grid Advisory — Ward 4 Sector</h3>
       </div>
-      <p style="font-size: 0.9rem; color: var(--text-muted);">
+      <p class="advisory-text">
         Maintenance teams are currently responding to severe wind-related power line disruptions near Elm Street. Priority response units dispatched.
       </p>
     </div>
 
-    <!-- Recent Incidents Table -->
+    <!-- Recent Table -->
     <div class="card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <h2 style="font-size: 1.125rem; font-weight: 600;">Recent Complaint Submissions</h2>
+      <div class="section-header">
+        <h2 class="section-title">Recent Complaint Submissions</h2>
         <a href="history.html" class="btn btn-secondary btn-sm">View Full History</a>
       </div>
       <div style="overflow-x: auto;">
@@ -113,10 +217,10 @@
         const tbody = document.getElementById('dash-reports-tbody');
         tbody.innerHTML = reports.slice(0, 5).map(r => `
           <tr>
-            <td><strong>${r.id}</strong></td>
+            <td><strong style="font-family: 'JetBrains Mono', monospace; color: #00E5FF;">${r.id}</strong></td>
             <td>${r.type}</td>
             <td>${r.location}</td>
-            <td>${r.date}</td>
+            <td style="color: #64748b; font-size: 0.82rem;">${r.date}</td>
             <td><span class="${getPriorityClass(r.severity)}">${r.severity}</span></td>
             <td><span class="badge ${getBadgeClass(r.status)}">${r.status}</span></td>
             <td><a href="status-tracking.html?id=${r.id}" class="btn btn-secondary btn-sm">Track Progress</a></td>

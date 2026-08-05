@@ -13,7 +13,7 @@
 </head>
 <body class="admin-shell">
   <main class="main-content" style="max-width: 1350px;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid #1e293b; padding-bottom: 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
       <div>
         <h1 class="page-title" style="color: #f8fafc;">Hardware Sensor Alerts</h1>
         <p style="color: #94a3b8; font-size: 0.875rem;">Real-time feed of sensor-originated grid anomalies (voltage drops, overcurrent, pole tilts, transformer overheating, broken lines).</p>
@@ -22,7 +22,7 @@
         <button id="btn-trigger-anomaly" class="btn btn-danger btn-sm" style="background: #dc2626; border: none;">
           <i data-lucide="zap"></i> Simulate Sensor Anomaly
         </button>
-        <button id="btn-poll-sensors" class="btn btn-secondary btn-sm" style="background: #1e293b; border-color: #334155; color: #38bdf8;">
+        <button id="btn-poll-sensors" class="btn btn-secondary btn-sm" style="background: rgba(0, 191, 255, 0.1); border: 1px solid var(--border-color); color: var(--accent-cyan);">
           <i data-lucide="refresh-cw"></i> Poll Sensors Now
         </button>
       </div>
@@ -97,7 +97,7 @@
           <td><span class="badge ${alt.severity === 'Critical' ? 'priority-emergency' : 'priority-high'}">${alt.severity}</span></td>
           <td style="color: #94a3b8; font-size: 0.75rem;">${alt.lastPing}</td>
           <td>
-            <a href="admin-sensor-detail.html?id=${alt.poleId}" class="btn btn-secondary btn-sm" style="background: #1e293b; border-color: #334155; color: #f8fafc; padding: 2px 8px;">
+            <a href="admin-sensor-detail.html?id=${alt.poleId}" class="btn btn-secondary btn-sm" style="background: rgba(0, 191, 255, 0.1); border: 1px solid var(--border-color); color: var(--accent-cyan); padding: 2px 8px;">
               <i data-lucide="bar-chart-2" style="width: 12px; height: 12px;"></i> Diagnostics
             </a>
           </td>
