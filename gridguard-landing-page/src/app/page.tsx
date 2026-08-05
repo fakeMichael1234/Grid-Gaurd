@@ -9,7 +9,7 @@ import { Zap, Shield, Activity } from 'lucide-react'
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] },
+  transition: { duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
 })
 
 export default function Home() {
@@ -84,7 +84,7 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0, scaleX: 0 }}
           animate={{ opacity: 1, scaleX: 1 }}
-          transition={{ duration: 1, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1, delay: 0.25, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
           className="relative w-64 h-px mb-8"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-80" />
