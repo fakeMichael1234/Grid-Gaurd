@@ -44,46 +44,55 @@ const GridApp = {
 
   init() {
 
-    if (!localStorage.getItem('grid_unified_reports')) {
+    // Sanitize any existing reports in localStorage replacing legacy names with Ram Kumar
+    const existingReportsStr = localStorage.getItem('grid_unified_reports');
+    if (existingReportsStr) {
+      const sanitizedStr = existingReportsStr
+        .replace(/Michael Scott/g, 'Ram Kumar')
+        .replace(/Pam Beesly/g, 'Priya Sundaram')
+        .replace(/452 Elm Street, Ward 4/g, '142 Anna Salai, T. Nagar, Chennai')
+        .replace(/Intersection of 5th Ave & Market St/g, 'Intersection of 100 Feet Road & Velachery Main Rd, Chennai');
+      localStorage.setItem('grid_unified_reports', sanitizedStr);
+    } else {
       const initialReports = [
         {
           id: 'GG-2026-8801',
-          citizenName: 'Michael Scott',
+          citizenName: 'Ram Kumar',
           type: 'Power Outage / Line Fault',
           title: 'High-voltage line sagging near residential complex',
           description: 'Storm winds caused heavy tree branches to fall on main feeder line. Sparking observed.',
-          location: '452 Elm Street, Ward 4',
-          lat: '41.4089',
-          lng: '-75.6624',
+          location: '142 Anna Salai, T. Nagar, Chennai',
+          lat: '13.0418',
+          lng: '80.2341',
           severity: 'High',
           status: 'Dispatched',
           date: '2026-08-05 22:15',
-          contactPhone: '+1 (555) 234-5678',
+          contactPhone: '+91 98401 23456',
           source: 'Citizen',
           attachments: ['Photo', 'Photo'],
           timeline: [
             { status: 'Reported', time: '2026-08-05 22:15', note: 'Incident report filed via Citizen Portal.' },
-            { status: 'Under Review', time: '2026-08-05 22:20', note: 'Assigned to Sector 4 Electrical Dispatch.' },
+            { status: 'Under Review', time: '2026-08-05 22:20', note: 'Assigned to Sector 4 T. Nagar Electrical Dispatch.' },
             { status: 'Dispatched', time: '2026-08-05 22:45', note: 'Maintenance Crew #12 en route.' }
           ]
         },
         {
           id: 'GG-2026-8794',
-          citizenName: 'Pam Beesly',
+          citizenName: 'Priya Sundaram',
           type: 'Water Main Leak / Pipe Burst',
           title: 'Clean water gusher flooding sidewalk',
           description: 'Underground main rupture creating significant water accumulation on roadway.',
-          location: 'Intersection of 5th Ave & Market St',
-          lat: '41.4112',
-          lng: '-75.6650',
+          location: 'Intersection of 100 Feet Road & Velachery Main Rd, Chennai',
+          lat: '12.9791',
+          lng: '80.2180',
           severity: 'Medium',
           status: 'Under Review',
           date: '2026-08-05 18:30',
-          contactPhone: '+1 (555) 987-6543',
+          contactPhone: '+91 98402 98765',
           source: 'Citizen',
           attachments: ['Photo'],
           timeline: [
-            { status: 'Reported', time: '2026-08-05 18:30', note: 'Received by Municipal Works.' },
+            { status: 'Reported', time: '2026-08-05 18:30', note: 'Received by Chennai Municipal Works.' },
             { status: 'Under Review', time: '2026-08-05 19:00', note: 'Inspector dispatched for pressure test verification.' }
           ]
         }
@@ -93,12 +102,12 @@ const GridApp = {
 
     if (!localStorage.getItem('grid_unified_poles')) {
       const initialPoles = [
-        { id: 'POLE-W4-012', location: '452 Elm Street, Ward 4', status: 'CRITICAL', voltage: 182, current: 84.2, tilt: 14.2, temp: 98.4, transformerStatus: 'OVERHEATING', lineStatus: 'FAULT_SAG', lat: '41.4089', lng: '-75.6624', lastPing: '10s ago' },
-        { id: 'POLE-W4-013', location: '458 Elm Street, Ward 4', status: 'WARNING', voltage: 204, current: 45.1, tilt: 2.1, temp: 72.0, transformerStatus: 'NORMAL', lineStatus: 'VOLTAGE_DROP', lat: '41.4092', lng: '-75.6630', lastPing: '15s ago' },
-        { id: 'POLE-W2-089', location: 'Industrial Pkwy Gate 3', status: 'CRITICAL', voltage: 0, current: 0.0, tilt: 28.5, temp: 112.5, transformerStatus: 'OFFLINE_BLOWN', lineStatus: 'LINE_BROKEN', lat: '41.4201', lng: '-75.6410', lastPing: '1m ago' },
-        { id: 'POLE-W1-004', location: '5th Ave & Market St', status: 'WARNING', voltage: 218, current: 62.0, tilt: 1.0, temp: 84.0, transformerStatus: 'WARN_HIGH_LOAD', lineStatus: 'NORMAL', lat: '41.4112', lng: '-75.6650', lastPing: '5s ago' },
-        { id: 'POLE-W3-045', location: 'West Heights Substation Feeder A', status: 'HEALTHY', voltage: 238, current: 32.4, tilt: 0.4, temp: 64.2, transformerStatus: 'NORMAL', lineStatus: 'NORMAL', lat: '41.3980', lng: '-75.6720', lastPing: '2s ago' },
-        { id: 'POLE-W3-046', location: 'West Heights Substation Feeder B', status: 'HEALTHY', voltage: 240, current: 31.0, tilt: 0.2, temp: 62.8, transformerStatus: 'NORMAL', lineStatus: 'NORMAL', lat: '41.3985', lng: '-75.6725', lastPing: '4s ago' }
+        { id: 'POLE-W4-012', location: '142 Anna Salai, T. Nagar, Chennai', status: 'CRITICAL', voltage: 182, current: 84.2, tilt: 14.2, temp: 98.4, transformerStatus: 'OVERHEATING', lineStatus: 'FAULT_SAG', lat: '13.0418', lng: '80.2341', lastPing: '10s ago' },
+        { id: 'POLE-W4-013', location: '148 Anna Salai, T. Nagar, Chennai', status: 'WARNING', voltage: 204, current: 45.1, tilt: 2.1, temp: 72.0, transformerStatus: 'NORMAL', lineStatus: 'VOLTAGE_DROP', lat: '13.0422', lng: '80.2348', lastPing: '15s ago' },
+        { id: 'POLE-W2-089', location: 'SIPCOT Industrial Complex Gate 3, Cuddalore', status: 'CRITICAL', voltage: 0, current: 0.0, tilt: 28.5, temp: 112.5, transformerStatus: 'OFFLINE_BLOWN', lineStatus: 'LINE_BROKEN', lat: '11.7480', lng: '79.7714', lastPing: '1m ago' },
+        { id: 'POLE-W1-004', location: 'Intersection of 100 Feet Road & Velachery Main Rd, Chennai', status: 'WARNING', voltage: 218, current: 62.0, tilt: 1.0, temp: 84.0, transformerStatus: 'WARN_HIGH_LOAD', lineStatus: 'NORMAL', lat: '12.9791', lng: '80.2180', lastPing: '5s ago' },
+        { id: 'POLE-W3-045', location: 'Kaveri Substation Feeder A, Tiruchirappalli', status: 'HEALTHY', voltage: 238, current: 32.4, tilt: 0.4, temp: 64.2, transformerStatus: 'NORMAL', lineStatus: 'NORMAL', lat: '10.7905', lng: '78.7047', lastPing: '2s ago' },
+        { id: 'POLE-W3-046', location: 'Kaveri Substation Feeder B, Tiruchirappalli', status: 'HEALTHY', voltage: 240, current: 31.0, tilt: 0.2, temp: 62.8, transformerStatus: 'NORMAL', lineStatus: 'NORMAL', lat: '10.7910', lng: '78.7052', lastPing: '4s ago' }
       ];
       this.set('poles', initialPoles);
     }
@@ -108,7 +117,7 @@ const GridApp = {
         {
           id: 1,
           title: 'Dispatch Update - Ticket GG-2026-8801',
-          message: 'Maintenance Crew #12 was dispatched to 452 Elm Street.',
+          message: 'Maintenance Crew #12 was dispatched to 142 Anna Salai, T. Nagar, Chennai.',
           time: '2026-08-05 22:45',
           unread: true,
           urgent: false
@@ -243,7 +252,7 @@ GridApp.init();
 
 // Global Nav Header Renderer
 function renderAppHeader(activeKey) {
-  const session = GridApp.get('session', { role: 'citizen' });
+  const session = GridApp.get('session', { role: 'citizen', name: 'RAM KUMAR' });
   const notifications = GridApp.get('notifications', []);
   const unreadCount = notifications.filter(n => n.unread).length;
   const isAdmin = session.role === 'admin';
@@ -271,6 +280,7 @@ function renderAppHeader(activeKey) {
             <a href="admin-faults.html" class="nav-link ${activeKey === 'complaints' || activeKey === 'faults' ? 'active' : ''}"><i data-lucide="users"></i> Complaints</a>
             <a href="admin-incident-creation.html" class="nav-link ${activeKey === 'sensor-alerts' || activeKey === 'incidents' ? 'active' : ''}"><i data-lucide="alert-triangle"></i> Sensor Alerts</a>
             <a href="admin-priority-queue.html" class="nav-link ${activeKey === 'queue' ? 'active' : ''}"><i data-lucide="list-ordered"></i> Priority Queue</a>
+            <a href="admin-flood-intelligence.html" class="nav-link ${activeKey === 'flood-intel' ? 'active' : ''}"><i data-lucide="waves"></i> Flood Intelligence</a>
           `}
         </nav>
 
@@ -279,7 +289,7 @@ function renderAppHeader(activeKey) {
             <a href="emergency.html" class="btn-emergency-nav"><i data-lucide="siren"></i> Emergency Dispatch</a>
           ` : ''}
           <div class="user-pill">
-            <span><i data-lucide="${isAdmin ? 'shield-check' : 'user'}"></i> <strong>${session.name}</strong></span>
+            <span><i data-lucide="${isAdmin ? 'shield-check' : 'user'}"></i> <strong>${session.name || 'RAM KUMAR'}</strong></span>
             <button onclick="GridApp.logout()" class="btn btn-secondary btn-sm" style="background:#1e293b; border-color:#334155; color:#f8fafc; cursor:pointer;">Switch Portal</button>
           </div>
         </div>

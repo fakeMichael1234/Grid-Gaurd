@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Flood Management & Responsive System — Walkthrough</title>
+<style>
+  :root{
+    --bg:#0a1220; --panel:#111d33; --panel2:#0d1830; --line:#26385c;
+    --text:#e6edf7; --muted:#7d8db3;
+    --cyan:#3ecbe8; --green:#3ecf7a; --red:#ef5b5b; --amber:#f5b342; --purple:#a684ff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Segoe UI',Roboto,Arial,sans-serif;
+    display:flex; flex-direction:column; align-items:center;
+    padding:32px 16px 60px;
+  }
+  h1{
+    font-size:22px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--text); margin:0 0 4px; text-align:center;
+  }
+  .sub{color:var(--muted); font-size:13px; margin-bottom:28px; text-align:center}
+  .stage{
+    width:100%; max-width:980px; background:var(--panel);
+    border:1px solid var(--line); border-radius:14px; padding:28px 24px 20px;
+    position:relative; overflow:hidden;
+  }
+  .layers{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; position:relative}
+  .layer-label{
+    font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--muted); text-align:center; margin-bottom:10px;
+  }
+  .node{
+    background:var(--panel2); border:1px solid var(--line); border-radius:10px;
+    padding:12px 10px; margin-bottom:10px; text-align:center;
+    transition:all .35s ease; position:relative;
+  }
+  .node .t{font-size:13px; font-weight:600}
+  .node .s{font-size:11px; color:var(--muted); margin-top:3px}
+  .node.active{
+    border-color:var(--cyan);
+    box-shadow:0 0 0 1px var(--cyan), 0 0 18px rgba(62,203,232,.35);
+    transform:translateY(-2px);
+  }
+  .node.active.fault{border-color:var(--red); box-shadow:0 0 0 1px var(--red),0 0 18px rgba(239,91,91,.35)}
+  .node.active.ai{border-color:var(--amber); box-shadow:0 0 0 1px var(--amber),0 0 18px rgba(245,179,66,.35)}
+  .node.active.app{border-color:var(--purple); box-shadow:0 0 0 1px var(--purple),0 0 18px rgba(166,132,255,.35)}
+  .connectors{height:26px; position:relative}
+  .connectors svg{width:100%; height:100%; display:block}
+  .flow-dot{fill:var(--cyan)}
+  .caption{
+    margin-top:22px; background:var(--panel2); border:1px solid var(--line);
+    border-radius:10px; padding:16px 18px; font-size:14.5px; line-height:1.6;
+    min-height:56px;
+  }
+  .controls{
+    display:flex; align-items:center; gap:10px; margin-top:18px; width:100%; max-width:980px;
+  }
+  button{
+    background:var(--panel2); color:var(--text); border:1px solid var(--line);
+    border-radius:8px; padding:8px 16px; font-size:13px; cursor:pointer;
+  }
+  button:hover{border-color:var(--cyan)}
+  .dots{display:flex; gap:6px; margin-left:auto}
+  .dot{width:22px; height:4px; border-radius:2px; background:var(--line); cursor:pointer}
+  .dot.on{background:var(--cyan)}
+  .steplabel{font-size:12px; color:var(--muted)}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  .live{animation:blink 1.4s infinite}
+</style>
+</head>
+<body>
+
+<h1>Flood Management &amp; Responsive System</h1>
+<div class="sub">Physical sensors &rarr; edge processing &rarr; cloud analysis &rarr; citizen &amp; admin apps</div>
+
+<div class="stage">
+  <div class="layers">
+    <div>
+      <div class="layer-label">Physical layer</div>
+      <div class="node" id="n-water"><div class="t">JSN-SR04T</div><div class="s">Water level (ultrasonic)</div></div>
+      <div class="node" id="n-volt"><div class="t">ZMPT101B</div><div class="s">AC voltage sensor</div></div>
+      <div class="node" id="n-curr"><div class="t">SCT-013</div><div class="s">Current transformer</div></div>
+    </div>
+    <div>
+      <div class="layer-label">Edge layer</div>
+      <div class="node" id="n-esp"><div class="t">ESP32 NodeMCU</div><div class="s">Reads sensors, tags pole ID + GPS, edge anomaly check</div></div>
+    </div>
+    <div>
+      <div class="layer-label">Cloud layer</div>
+      <div class="node" id="n-ingest"><div class="t">Supabase ingest</div><div class="s">API gateway &rarr; PostgreSQL</div></div>
+      <div class="node" id="n-ai"><div class="t">AI correlation engine</div><div class="s">Flood vs. pole breakage</div></div>
+    </div>
+    <div>
+      <div class="layer-label">Enterprise layer</div>
+      <div class="node" id="n-admin"><div class="t">Admin dashboard</div><div class="s">Map, alerts, auto-isolate</div></div>
+      <div class="node" id="n-citizen"><div class="t">Citizen portal</div><div class="s">Reports + photo upload</div></div>
+    </div>
+  </div>
+
+  <div class="caption" id="caption"></div>
+</div>
+
+<div class="controls">
+  <button id="playBtn" onclick="togglePlay()">&#9654; Play</button>
+  <button onclick="go(-1)">&larr; Back</button>
+  <button onclick="go(1)">Next &rarr;</button>
+  <span class="steplabel" id="stepLabel"></span>
+  <div class="dots" id="dots"></div>
+</div>
+
+<script>
+const steps = [
+  {nodes:['n-water','n-volt','n-curr'], cls:'', text:"Three sensors sit on the prototype pole and flood rig: an ultrasonic sensor tracks rising water, an AC voltage sensor watches the power line, and a current-transformer clamp watches for a break in the circuit."},
+  {nodes:['n-esp'], cls:'', text:"The ESP32 NodeMCU reads all three sensors, stamps each reading with pole ID, GPS, and timestamp, and runs a first anomaly check before anything leaves the pole."},
+  {nodes:['n-esp'], cls:'', text:"Over WiFi, the ESP32 streams a telemetry packet: water level, voltage, current, lat/lng, and timestamp — heading to the cloud."},
+  {nodes:['n-ingest'], cls:'', text:"A Supabase API gateway ingests the packet and writes it into PostgreSQL — one table for pole telemetry, one for citizen reports."},
+  {nodes:['n-ai'], cls:'ai', text:"A Python AI engine correlates water level against voltage and current, distinguishing a genuine flood event from a snapped or shorted pole."},
+  {nodes:['n-admin'], cls:'app', text:"Confirmed events hit the admin dashboard in realtime over websockets: a live GIS pin, a flood-level chart, and pole-health status."},
+  {nodes:['n-admin'], cls:'fault', text:"Auto-isolate logic can fire automatically: isolate the pole on a breakage signature, or isolate the zone on a rising-water signature."},
+  {nodes:['n-citizen'], cls:'app', text:"In parallel, citizens can report a flood or downed line directly through the portal, with a description and photo, feeding the same database the AI engine reads from."}
+];
+
+let idx = 0, playing = false, timer = null;
+const dotsEl = document.getElementById('dots');
+steps.forEach((_,i)=>{
+  const d = document.createElement('div');
+  d.className = 'dot'; d.onclick = ()=>{idx=i; render();};
+  dotsEl.appendChild(d);
+});
+
+function render(){
+  document.querySelectorAll('.node').forEach(n=>n.classList.remove('active','fault','ai','app'));
+  const s = steps[idx];
+  s.nodes.forEach(id=>{
+    const el = document.getElementById(id);
+    el.classList.add('active');
+    if (s.cls) el.classList.add(s.cls);
+  });
+  document.getElementById('caption').textContent = s.text;
+  document.getElementById('stepLabel').textContent = 'Step ' + (idx+1) + ' of ' + steps.length;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on', i===idx));
+}
+function go(dir){ idx = (idx + dir + steps.length) % steps.length; render(); }
+function togglePlay(){
+  playing = !playing;
+  document.getElementById('playBtn').innerHTML = playing ? '&#10074;&#10074; Pause' : '&#9654; Play';
+  if(playing){ timer = setInterval(()=>go(1), 3200); } else { clearInterval(timer); }
+}
+render();
+</script>
+</body>
+</html>

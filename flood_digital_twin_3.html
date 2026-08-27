@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GridGuard // Grid Resilience Console</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --bg:#070a0d;
+  --panel:#0d1319;
+  --panel2:#111922;
+  --line:#1c2733;
+  --line-bright:#28394a;
+  --amber:#ffb020;
+  --green:#2ee6a6;
+  --red:#ff4d4f;
+  --cyan:#3fd0ff;
+  --blue:#5b8def;
+  --text:#c9d6e0;
+  --text-dim:#6c7f91;
+  --text-bright:#eef5fa;
+  --mono:'IBM Plex Mono','Share Tech Mono',monospace;
+  --disp:'Rajdhani',sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--mono);height:100%;}
+body{
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(63,208,255,0.05), transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(46,230,166,0.04), transparent 40%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+  min-height:100vh;
+}
+::selection{background:var(--cyan);color:#000;}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-thumb{background:var(--line-bright);border-radius:4px;}
+::-webkit-scrollbar-track{background:var(--panel);}
+
+/* ===== TOP BAR ===== */
+.topbar{
+  display:flex;align-items:center;gap:18px;
+  padding:10px 18px;border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,#0b1015,#080b0e);
+  position:sticky;top:0;z-index:50;
+}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;}
+.brand h1{font-family:var(--disp);font-weight:700;font-size:19px;letter-spacing:2px;color:var(--text-bright);margin:0;}
+.brand small{display:block;color:var(--text-dim);font-size:10px;letter-spacing:2px;margin-top:1px;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+.tb-search{
+  display:flex;align-items:center;gap:8px;background:var(--panel);
+  border:1px solid var(--line);border-radius:3px;padding:6px 10px;flex:1;max-width:360px;
+}
+.tb-search input{background:transparent;border:none;color:var(--text-bright);font-family:var(--mono);font-size:12px;outline:none;width:100%;}
+.tb-search input::placeholder{color:var(--text-dim);}
+.tb-search svg{flex-shrink:0;}
+
+.tb-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.chip{
+  font-size:10.5px;letter-spacing:.5px;padding:5px 10px;border:1px solid var(--line);border-radius:2px;
+  color:var(--text-dim);cursor:pointer;background:var(--panel2);transition:.15s;white-space:nowrap;
+}
+.chip:hover{border-color:var(--cyan);color:var(--cyan);}
+.chip.active{border-color:var(--cyan);color:var(--cyan);background:rgba(63,208,255,0.08);}
+
+.tb-clock{margin-left:auto;text-align:right;font-size:11px;color:var(--text-dim);}
+.tb-clock b{color:var(--text-bright);font-size:13px;}
+
+/* ===== LAYOUT ===== */
+.app{display:grid;grid-template-columns:1fr 340px;gap:1px;background:var(--line);}
+.col-left{display:flex;flex-direction:column;gap:1px;background:var(--line);}
+.col-right{display:flex;flex-direction:column;gap:1px;background:var(--line);}
+
+.panel{background:var(--panel);}
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 14px;border-bottom:1px solid var(--line);
+  font-family:var(--disp);font-weight:600;letter-spacing:1.5px;font-size:12.5px;color:var(--text-bright);
+}
+.panel-head .tag{font-family:var(--mono);font-weight:400;font-size:10px;color:var(--text-dim);letter-spacing:1px;}
+.panel-body{padding:14px;}
+
+/* ===== CONTROL STRIP ===== */
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);}
+.btn{
+  font-family:var(--disp);font-weight:600;font-size:12px;letter-spacing:1px;
+  padding:7px 14px;border-radius:2px;border:1px solid var(--line-bright);background:var(--panel2);
+  color:var(--text-bright);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:6px;
+}
+.btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.btn.primary{background:rgba(46,230,166,0.1);border-color:var(--green);color:var(--green);}
+.btn.primary:hover{background:rgba(46,230,166,0.18);}
+.btn.danger{background:rgba(255,77,79,0.1);border-color:var(--red);color:var(--red);}
+.btn.danger:hover{background:rgba(255,77,79,0.18);}
+.btn:disabled{opacity:.35;cursor:not-allowed;}
+.slider-wrap{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-dim);}
+.slider-wrap input[type=range]{width:110px;accent-color:var(--cyan);}
+.slider-wrap b{color:var(--text-bright);width:32px;display:inline-block;}
+
+/* ===== MAP / ENVIRONMENT ===== */
+.mapwrap{position:relative;height:560px;overflow:hidden;background:
+  linear-gradient(180deg,#0a1016 0%,#0c141b 55%,#0a1218 100%);}
+.reflection{position:absolute;left:0;right:0;bottom:0;height:40%;pointer-events:none;z-index:2;
+  background:linear-gradient(180deg, rgba(63,150,200,0.0), rgba(30,70,100,.18));opacity:0;transition:opacity 1.2s;mix-blend-mode:screen;}
+.sky{position:absolute;inset:0;transition:background 1.2s;}
+.grid-overlay{position:absolute;inset:0;background-image:
+  linear-gradient(rgba(63,208,255,0.045) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(63,208,255,0.045) 1px,transparent 1px);
+  background-size:38px 38px;pointer-events:none;}
+
+.locality-label{position:absolute;top:10px;left:14px;font-family:var(--disp);font-size:13px;letter-spacing:2px;color:var(--text-bright);z-index:5;}
+.locality-label span{color:var(--cyan);}
+.riskbadge{position:absolute;top:10px;right:14px;z-index:5;font-family:var(--disp);font-weight:700;font-size:11px;
+  letter-spacing:1.5px;padding:5px 12px;border-radius:2px;border:1px solid var(--green);color:var(--green);background:rgba(46,230,166,.08);transition:.4s;}
+.riskbadge.warn{border-color:var(--amber);color:var(--amber);background:rgba(255,176,32,.08);}
+.riskbadge.crit{border-color:var(--red);color:var(--red);background:rgba(255,77,79,.1);animation:blinkbadge 1s infinite;}
+@keyframes blinkbadge{0%,100%{opacity:1}50%{opacity:.55}}
+
+.rain-layer{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1s;}
+.raindrop{position:absolute;width:1px;background:linear-gradient(180deg,transparent,rgba(150,210,255,.55));animation:fall linear infinite;}
+@keyframes fall{0%{transform:translateY(-20px)}100%{transform:translateY(560px)}}
+
+.flood-street{position:absolute;left:0;right:0;bottom:0;height:0px;
+  background:linear-gradient(180deg,rgba(63,140,190,.35),rgba(20,60,90,.75));
+  border-top:1px solid rgba(150,210,255,.4);transition:height 1.8s ease;z-index:2;
+  box-shadow:0 -2px 18px rgba(63,180,255,.15) inset;}
+.flood-street::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:repeating-linear-gradient(90deg, rgba(255,255,255,.15) 0 22px, transparent 22px 46px);
+  animation:ripple 2.4s linear infinite;}
+@keyframes ripple{0%{background-position-x:0}100%{background-position-x:46px}}
+
+.poles-row{position:absolute;left:0;right:0;bottom:0;top:0;display:flex;align-items:flex-end;justify-content:space-around;
+  padding:0 30px 0 30px;z-index:3;}
+
+.pole-unit{position:relative;width:150px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;cursor:pointer;}
+.pole-unit:hover .pole-svg{filter:drop-shadow(0 0 6px rgba(63,208,255,.5));}
+.pole-status-lamp{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;
+  background:var(--green);box-shadow:0 0 8px var(--green);z-index:4;}
+.pole-status-lamp.warn{background:var(--amber);box-shadow:0 0 8px var(--amber);}
+.pole-status-lamp.crit{background:var(--red);box-shadow:0 0 10px var(--red);animation:blinkbadge .6s infinite;}
+.pole-status-lamp.off{background:#3a4552;box-shadow:none;}
+
+.pole-label{position:absolute;top:20px;font-size:9.5px;color:var(--text-dim);letter-spacing:1px;z-index:4;background:rgba(7,10,13,.6);padding:1px 5px;border-radius:2px;}
+
+.pole-svg{width:100%;height:88%;transition:filter .2s;}
+.pole-water{position:absolute;bottom:0;left:8%;right:8%;background:linear-gradient(180deg,rgba(70,150,200,.5),rgba(20,60,95,.85));
+  height:0;transition:height 1.8s ease;border-top:1px solid rgba(160,220,255,.6);border-radius:0 0 3px 3px;z-index:2;}
+
+/* wires linking poles */
+.wire{position:absolute;top:52px;height:1.5px;background:linear-gradient(90deg,#4a5b6b,#5f7385,#4a5b6b);z-index:1;}
+.wire.cut{background:repeating-linear-gradient(90deg,#4a5b6b 0 6px, transparent 6px 12px);opacity:.35;}
+.spark{position:absolute;width:5px;height:5px;background:#fff2b8;border-radius:50%;box-shadow:0 0 10px 3px #ffdb70;
+  animation:sparkfx .5s ease-out;}
+@keyframes sparkfx{0%{opacity:1;transform:scale(1.4)}100%{opacity:0;transform:scale(.2)}}
+
+
+/* ===== DATA FLOW STRIP ===== */
+.flow-strip{position:relative;height:150px;padding:10px 20px;overflow:hidden;}
+.flow-stages{display:flex;justify-content:space-between;align-items:center;height:100%;position:relative;}
+.flow-node{display:flex;flex-direction:column;align-items:center;gap:6px;z-index:2;width:90px;text-align:center;}
+.flow-node .icon{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line-bright);display:flex;align-items:center;justify-content:center;
+  background:var(--panel2);transition:.3s;}
+.flow-node.active .icon{border-color:var(--cyan);box-shadow:0 0 12px rgba(63,208,255,.4);}
+.flow-node .lbl{font-size:9.5px;color:var(--text-dim);letter-spacing:.5px;line-height:1.3;}
+.flow-node .sub{font-size:9px;color:var(--text-bright);font-weight:600;}
+.flow-line{position:absolute;top:19px;height:1px;background:var(--line-bright);z-index:1;}
+.packet{position:absolute;top:-3px;width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);
+  animation:flyPacket 1.6s linear forwards;}
+@keyframes flyPacket{0%{left:0;opacity:0}8%{opacity:1}92%{opacity:1}100%{left:100%;opacity:0}}
+
+/* ===== RIGHT SIDEBAR ===== */
+.ai-panel .kv{display:flex;justify-content:space-between;font-size:11.5px;padding:4px 0;border-bottom:1px dashed var(--line);}
+.ai-panel .kv b{color:var(--text-bright);}
+.riskbar{height:7px;background:var(--panel2);border-radius:4px;overflow:hidden;margin-top:4px;border:1px solid var(--line);}
+.riskbar > div{height:100%;transition:width .8s,background .5s;}
+.ai-verdict{margin-top:12px;padding:10px;border-left:3px solid var(--green);background:rgba(255,255,255,.02);font-size:11.5px;line-height:1.5;color:var(--text);transition:.4s;}
+.ai-verdict.warn{border-color:var(--amber);}
+.ai-verdict.crit{border-color:var(--red);}
+.threat-level{font-family:var(--disp);font-weight:700;letter-spacing:2px;font-size:15px;margin-top:10px;color:var(--green);}
+.threat-level.warn{color:var(--amber);}
+.threat-level.crit{color:var(--red);}
+
+.timeline{max-height:230px;overflow-y:auto;font-size:11px;}
+.tl-item{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);}
+.tl-item .t{color:var(--text-dim);flex-shrink:0;font-size:10px;padding-top:1px;}
+.tl-item .m{color:var(--text);}
+.tl-item.warn .m{color:var(--amber);}
+.tl-item.crit .m{color:var(--red);font-weight:600;}
+.tl-item.ok .m{color:var(--green);}
+
+.tabs{display:flex;border-bottom:1px solid var(--line);}
+.tabs button{flex:1;background:transparent;border:none;color:var(--text-dim);font-family:var(--disp);font-weight:600;
+  letter-spacing:1px;font-size:11.5px;padding:9px 0;cursor:pointer;border-bottom:2px solid transparent;}
+.tabs button.active{color:var(--text-bright);border-bottom-color:var(--cyan);}
+
+.pole-health-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:6px 0;border-bottom:1px solid var(--line);}
+.pole-health-row .pname{color:var(--text-bright);}
+.pill{font-size:9.5px;padding:2px 8px;border-radius:10px;letter-spacing:.5px;border:1px solid;}
+.pill.ok{color:var(--green);border-color:var(--green);}
+.pill.warn{color:var(--amber);border-color:var(--amber);}
+.pill.crit{color:var(--red);border-color:var(--red);}
+.pill.off{color:var(--text-dim);border-color:var(--line-bright);}
+
+
+/* ===== MODAL (pole detail) ===== */
+.modal-backdrop{position:fixed;inset:0;background:rgba(4,6,8,.7);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:100;}
+.modal-backdrop.show{display:flex;}
+.modal{width:560px;max-width:92vw;background:var(--panel);border:1px solid var(--line-bright);border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,.6);}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);}
+.modal-head h3{font-family:var(--disp);margin:0;font-size:15px;letter-spacing:1px;color:var(--text-bright);}
+.modal-head .x{cursor:pointer;color:var(--text-dim);font-size:18px;}
+.modal-head .x:hover{color:var(--red);}
+.modal-body{padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.readout{background:var(--panel2);border:1px solid var(--line);border-radius:3px;padding:9px 10px;}
+.readout .l{font-size:9.5px;color:var(--text-dim);letter-spacing:1px;}
+.readout .v{font-family:var(--disp);font-size:19px;font-weight:700;color:var(--text-bright);margin-top:2px;}
+.readout .v.warn{color:var(--amber);}
+.readout .v.crit{color:var(--red);}
+.modal-actions{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;}
+
+.footer-note{padding:8px 16px;font-size:10px;color:var(--text-dim);border-top:1px solid var(--line);letter-spacing:.5px;}
+
+@media(max-width:980px){
+  .app{grid-template-columns:1fr;}
+  .modal-body{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="dot" id="masterDot"></div>
+    <div>
+      <h1>GRIDGUARD</h1>
+      <small>FLOOD-AWARE ELECTRICAL GRID MONITORING</small>
+    </div>
+  </div>
+  <div class="tb-search">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6c7f91" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <input id="locSearch" placeholder="Search city / district / state — e.g. Chennai" />
+  </div>
+  <div class="tb-chips" id="locChips">
+    <div class="chip active" data-loc="Chennai, Tamil Nadu">Chennai</div>
+    <div class="chip" data-loc="Kochi, Kerala">Kerala</div>
+    <div class="chip" data-loc="Mumbai, Maharashtra">Mumbai</div>
+    <div class="chip" data-loc="Bengaluru, Karnataka">Bengaluru</div>
+    <div class="chip" data-loc="Guwahati, Assam">Assam</div>
+  </div>
+  <div class="tb-clock"><b id="clockTime">00:00:00</b><div>SIM CLOCK</div></div>
+</div>
+
+<div class="app">
+  <div class="col-left">
+
+    <div class="panel">
+      <div class="controls">
+        <button class="btn primary" id="btnStart">▶ START SIM</button>
+        <button class="btn" id="btnPause">⏸ PAUSE</button>
+        <button class="btn danger" id="btnReset">⟲ RESET</button>
+        <div class="slider-wrap">RAIN <input type="range" id="rainSlider" min="0" max="100" value="0"><b id="rainVal">0%</b></div>
+        <div class="slider-wrap">WATER <input type="range" id="waterSlider" min="0" max="100" value="0"><b id="waterVal">0%</b></div>
+        <button class="btn" id="btnFaultSensor">⚠ FAIL SENSOR</button>
+        <button class="btn" id="btnFaultNet">📡 DROP NETWORK</button>
+      </div>
+      <div class="controls" style="border-bottom:none;padding-top:0;">
+        <span style="font-size:10.5px;color:var(--text-dim);letter-spacing:1px;">SCENARIO:</span>
+        <div class="chip active" data-sc="A">A · Normal</div>
+        <div class="chip" data-sc="B">B · Heavy Rain</div>
+        <div class="chip" data-sc="C">C · Urban Flood</div>
+        <div class="chip" data-sc="D">D · Electrical Risk</div>
+        <div class="chip" data-sc="E">E · Sensor Failure</div>
+        <div class="chip" data-sc="F">F · Network Failure</div>
+        <div class="chip" data-sc="G">G · Multi-Zone</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">PHYSICAL LAYER — LIVE ENVIRONMENT <span class="tag" id="layerTag">ELECTRICITY · SENSORS · FLOOD RISK</span></div>
+      <div class="mapwrap" id="mapwrap">
+        <div class="sky" id="sky"></div>
+        <div class="grid-overlay"></div>
+        <div class="locality-label">📍 <span id="locName">CHENNAI</span>, TAMIL NADU — ZONE GG-12</div>
+        <div class="riskbadge" id="riskBadge">NOMINAL</div>
+        <div class="rain-layer" id="rainLayer"></div>
+        <div class="flood-street" id="floodStreet"></div>
+        <div class="reflection" id="reflection"></div>
+        <div class="poles-row" id="polesRow"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">EDGE ➜ COMMUNICATION ➜ CLOUD ➜ AI ➜ APPLICATIONS <span class="tag" id="commStatusTag">LINK: NOMINAL</span></div>
+      <div class="flow-strip">
+        <div class="flow-stages" id="flowStages"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-right">
+    <div class="panel ai-panel">
+      <div class="panel-head">AI DECISION ENGINE <span class="tag">correlation.py</span></div>
+      <div class="panel-body">
+        <div class="kv"><span>Rain intensity</span><b id="aiRain">0%</b></div>
+        <div class="kv"><span>Water level</span><b id="aiWater">0%</b></div>
+        <div class="kv"><span>Voltage stability</span><b id="aiVolt">Stable</b></div>
+        <div class="kv"><span>Current anomaly</span><b id="aiCurr">None</b></div>
+
+        <div style="margin-top:10px;">Flood Risk <b id="floodRiskPct" style="float:right;">0%</b></div>
+        <div class="riskbar"><div id="floodRiskBar" style="width:0%;background:var(--green);"></div></div>
+
+        <div style="margin-top:8px;">Electrical Risk <b id="elecRiskPct" style="float:right;">0%</b></div>
+        <div class="riskbar"><div id="elecRiskBar" style="width:0%;background:var(--green);"></div></div>
+
+        <div class="threat-level" id="threatLevel">THREAT: NOMINAL</div>
+        <div class="ai-verdict" id="aiVerdict">All sensor channels reporting within normal bounds. No correlated risk detected.</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="tabs">
+        <button class="active" data-tab="timeline">EVENT LOG</button>
+        <button data-tab="poles">POLE HEALTH</button>
+      </div>
+      <div class="panel-body" id="tabTimeline">
+        <div class="timeline" id="timeline"></div>
+      </div>
+      <div class="panel-body" id="tabPoles" style="display:none;">
+        <div id="poleHealthList"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">ADMIN — RESPONSE CONTROL</div>
+      <div class="panel-body" style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn danger" id="btnIsolateWorst">⚡ ISOLATE HIGHEST-RISK POLE</button>
+        <button class="btn" id="btnRestoreAll">🔌 RESTORE ALL POLES</button>
+        <div style="font-size:10px;color:var(--text-dim);margin-top:4px;">Auto-isolate on critical electrical risk:
+          <label style="color:var(--text-bright);"><input type="checkbox" id="autoIsolate" checked style="accent-color:var(--red);"> ON</label>
+        </div>
+      </div>
+      <div class="footer-note">GRIDGUARD — GRID RESILIENCE MONITORING PROTOTYPE · EDGE (ESP32) + CLOUD (SUPABASE / POSTGRESQL) + AI CORRELATION ENGINE</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-head"><h3 id="modalTitle">POLE GG-15</h3><span class="x" id="modalClose">✕</span></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-actions">
+      <button class="btn danger" id="modalIsolate">ISOLATE POLE</button>
+      <button class="btn primary" id="modalRestore">RESTORE POLE</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ STATE ============
+const POLE_COUNT = 3;
+const poleNames = ['GG-15','GG-16','GG-17'];
+let state = {
+  running:false,
+  rain:0, water:0,
+  location:'Chennai, Tamil Nadu',
+  scenario:'A',
+  netDown:false,
+  simSeconds: 36000 + 615, // 10:00:15 start
+  poles: poleNames.map((n,i)=>({
+    id:n, voltage:230, current:4.2, waterLevel:0, rainLocal:0,
+    status:'ok', comm:'ok', isolated:false, sensorFail:false
+  })),
+  timeline:[]
+};
+
+const $ = s=>document.querySelector(s);
+const $$ = s=>document.querySelectorAll(s);
+
+function fmtClock(sec){
+  sec = Math.floor(sec);
+  const h=String(Math.floor(sec/3600)%24).padStart(2,'0');
+  const m=String(Math.floor((sec%3600)/60)).padStart(2,'0');
+  const s=String(sec%60).padStart(2,'0');
+  return `${h}:${m}:${s}`;
+}
+
+function log(msg, level='ok'){
+  state.timeline.unshift({t:fmtClock(state.simSeconds), m:msg, level});
+  if(state.timeline.length>60) state.timeline.pop();
+  renderTimeline();
+}
+
+// ============ RENDER: POLES ============
+function poleSVG(idx){
+  const led = idx; // unique ids per pole to allow independent blink timing
+  return `
+  <svg viewBox="0 0 140 320" class="pole-svg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="woodgrad-${idx}" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#4a4038"/><stop offset="45%" stop-color="#6b5c4d"/>
+        <stop offset="55%" stop-color="#5c4f42"/><stop offset="100%" stop-color="#3d352c"/>
+      </linearGradient>
+      <linearGradient id="metalgrad-${idx}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#8fa3b3"/><stop offset="50%" stop-color="#4a5b6b"/><stop offset="100%" stop-color="#2a343d"/>
+      </linearGradient>
+      <radialGradient id="transformer-${idx}" cx="35%" cy="30%" r="80%">
+        <stop offset="0%" stop-color="#5a6b7a"/><stop offset="100%" stop-color="#232d36"/>
+      </radialGradient>
+    </defs>
+
+    <!-- cross-arm -->
+    <rect x="30" y="26" width="80" height="7" rx="1.5" fill="url(#metalgrad-${idx})" stroke="#1c2733" stroke-width="0.6"/>
+    <!-- insulators -->
+    <g fill="#3b4652" stroke="#20272e" stroke-width="0.6">
+      <rect x="38" y="14" width="7" height="14" rx="2"/>
+      <rect x="66" y="14" width="7" height="14" rx="2"/>
+      <rect x="94" y="14" width="7" height="14" rx="2"/>
+    </g>
+    <!-- sagging power lines to neighbours -->
+    <path d="M-40,18 Q35,32 41,18" fill="none" stroke="#6b7c8c" stroke-width="1"/>
+    <path d="M41,18 Q70,34 69,18" fill="none" stroke="#6b7c8c" stroke-width="1"/>
+    <path d="M69,18 Q100,34 97,18" fill="none" stroke="#6b7c8c" stroke-width="1"/>
+    <path d="M97,18 Q170,32 180,18" fill="none" stroke="#6b7c8c" stroke-width="1"/>
+
+    <!-- main pole shaft -->
+    <rect x="61" y="28" width="18" height="270" fill="url(#woodgrad-${idx})" stroke="#241f1a" stroke-width="1"/>
+    <g stroke="#2c261f" stroke-width="0.5" opacity="0.5">
+      <line x1="66" y1="30" x2="66" y2="296"/><line x1="74" y1="30" x2="74" y2="296"/>
+    </g>
+    <g stroke="#241f1a" stroke-width="1" opacity=".6">
+      <line x1="61" y1="60" x2="79" y2="58"/><line x1="61" y1="130" x2="79" y2="132"/><line x1="61" y1="210" x2="79" y2="208"/>
+    </g>
+
+    <!-- transformer can -->
+    <rect x="86" y="52" width="30" height="42" rx="6" fill="url(#transformer-${idx})" stroke="#1c2733" stroke-width="1"/>
+    <g stroke="#1c2733" stroke-width="1"><line x1="90" y1="58" x2="112" y2="58"/><line x1="90" y1="66" x2="112" y2="66"/><line x1="90" y1="74" x2="112" y2="74"/><line x1="90" y1="82" x2="112" y2="82"/></g>
+    <circle cx="101" cy="96" r="2" fill="#ffb020" id="tled-${idx}"/>
+
+    <!-- mounting bracket for edge box -->
+    <rect x="26" y="100" width="10" height="30" fill="url(#metalgrad-${idx})"/>
+
+    <!-- ESP32 edge enclosure -->
+    <g transform="translate(4,96)">
+      <rect x="0" y="0" width="60" height="46" rx="4" fill="#12181f" stroke="#3a4552" stroke-width="1.4"/>
+      <rect x="4" y="4" width="52" height="38" rx="2" fill="#0c2318" stroke="#1d3a2a"/>
+      <!-- chip -->
+      <rect x="20" y="12" width="20" height="20" rx="1" fill="#1a2229" stroke="#4a5b6b"/>
+      <text x="30" y="20" font-size="4.4" fill="#7fe3b0" text-anchor="middle" font-family="monospace">ESP32</text>
+      <text x="30" y="26" font-size="3.6" fill="#5f7385" text-anchor="middle" font-family="monospace">WROOM</text>
+      <!-- pins -->
+      <g fill="#d8c46a">
+        <circle cx="8" cy="10" r="1"/><circle cx="8" cy="16" r="1"/><circle cx="8" cy="22" r="1"/><circle cx="8" cy="28" r="1"/><circle cx="8" cy="34" r="1"/>
+        <circle cx="52" cy="10" r="1"/><circle cx="52" cy="16" r="1"/><circle cx="52" cy="22" r="1"/><circle cx="52" cy="28" r="1"/><circle cx="52" cy="34" r="1"/>
+      </g>
+      <!-- antenna trace -->
+      <path d="M44,10 q6,-4 0,-8 q-6,-4 0,-8" fill="none" stroke="#c9a94a" stroke-width="0.8"/>
+      <!-- status LED -->
+      <circle cx="12" cy="6" r="1.6" fill="#2ee6a6" id="board-led-${idx}"/>
+      <rect x="24" y="38" width="12" height="4" fill="#333" />
+      <text x="30" y="44" font-size="3.2" fill="#5f7385" text-anchor="middle" font-family="monospace">USB</text>
+    </g>
+
+    <!-- jumper wires down to sensor pod -->
+    <path d="M14,142 C10,160 40,168 34,182" fill="none" stroke="#e04b4b" stroke-width="1"/>
+    <path d="M24,142 C22,164 46,172 40,186" fill="none" stroke="#3fd0ff" stroke-width="1"/>
+    <path d="M34,142 C34,166 50,176 46,190" fill="none" stroke="#2ee6a6" stroke-width="1"/>
+
+    <!-- sensor pod (voltage / current clamp) -->
+    <g transform="translate(14,190)">
+      <rect x="0" y="0" width="46" height="24" rx="3" fill="#161d24" stroke="#3a4552" stroke-width="1.2"/>
+      <text x="23" y="10" font-size="4" fill="#8fa3b3" text-anchor="middle" font-family="monospace">ZMPT101B</text>
+      <text x="23" y="18" font-size="4" fill="#8fa3b3" text-anchor="middle" font-family="monospace">SCT-013</text>
+      <circle cx="6" cy="12" r="1.4" fill="#3fd0ff"/>
+    </g>
+    <!-- current clamp ring around the shaft -->
+    <ellipse cx="70" cy="205" rx="13" ry="5" fill="none" stroke="#c9a94a" stroke-width="2"/>
+
+    <!-- ultrasonic water-level sensor arm extending toward flood zone -->
+    <path d="M40,214 L20,236" stroke="#4a5b6b" stroke-width="2.4"/>
+    <g transform="translate(4,232)">
+      <rect x="0" y="0" width="28" height="14" rx="2" fill="#1c2733" stroke="#4a5b6b"/>
+      <circle cx="8" cy="7" r="4" fill="#0a1016" stroke="#5f7385"/>
+      <circle cx="20" cy="7" r="4" fill="#0a1016" stroke="#5f7385"/>
+      <circle id="sonar-${idx}" cx="14" cy="20" r="2" fill="none" stroke="#3fd0ff" stroke-width="1" opacity="0"/>
+    </g>
+    <text x="18" y="256" font-size="4.6" fill="#5f7385" font-family="monospace">JSN-SR04T</text>
+
+    <!-- rain gauge funnel near top -->
+    <path d="M100,102 L112,102 L107,114 Z" fill="#232d36" stroke="#4a5b6b" stroke-width="0.8"/>
+    <line x1="107" y1="114" x2="107" y2="124" stroke="#4a5b6b" stroke-width="1.4"/>
+    <text x="107" y="132" font-size="4" fill="#5f7385" text-anchor="middle" font-family="monospace">RAIN</text>
+
+    <!-- ===== CLICKABLE HOTSPOTS (invisible, sit above the art) ===== -->
+    <rect class="hotspot" data-comp="esp32" x="2" y="94" width="62" height="50" rx="4" fill="transparent"/>
+    <rect class="hotspot" data-comp="transformer" x="84" y="50" width="34" height="48" rx="4" fill="transparent"/>
+    <rect class="hotspot" data-comp="voltage" x="12" y="188" width="50" height="28" rx="3" fill="transparent"/>
+    <rect class="hotspot" data-comp="ultrasonic" x="0" y="228" width="34" height="30" rx="3" fill="transparent"/>
+    <rect class="hotspot" data-comp="rain" x="94" y="98" width="22" height="34" rx="2" fill="transparent"/>
+  </svg>`;
+}
+const HOTSPOT_STYLE = `.hotspot{cursor:pointer;} .hotspot:hover{fill:rgba(63,208,255,0.14) !important;stroke:#3fd0ff;stroke-width:1;stroke-dasharray:2 2;}`;
+const styleTag = document.createElement('style'); styleTag.textContent = HOTSPOT_STYLE; document.head.appendChild(styleTag);
+
+const COMPONENT_INFO = {
+  esp32:{
+    title:'ESP32-WROOM-32',
+    sub:'Edge Microcontroller',
+    desc:'A dual-core Wi-Fi + Bluetooth microcontroller that runs entirely at the pole. It polls every sensor several times a second, applies the local flood/electrical threshold rules, and decides in milliseconds whether a reading is normal, a warning, or critical — without waiting on the cloud.',
+    specs:[
+      ['CPU','Dual-core Xtensa LX6, 240 MHz'],
+      ['Connectivity','802.11 b/g/n Wi-Fi, Bluetooth LE'],
+      ['I/O used','ADC (voltage/current), GPIO (ultrasonic trigger/echo), UART'],
+      ['Role here','Reads all sensors, runs edge anomaly detection, pushes telemetry to Supabase']
+    ]
+  },
+  transformer:{
+    title:'Distribution Transformer',
+    sub:'Pole-mounted 11kV / 230V unit',
+    desc:'Steps down medium-voltage line power to the 230V used by nearby homes. It is the single most damage-prone asset in a flood: submerged windings short-circuit, and a live transformer sitting in floodwater is the main electrocution risk this whole system exists to prevent.',
+    specs:[
+      ['Function','Steps down distribution voltage for local supply'],
+      ['Failure mode','Winding short-circuit / insulation breakdown when submerged'],
+      ['Monitored via','Voltage + current sensors wired to the ESP32 below it'],
+      ['Automated response','Isolated from the grid the moment flood + electrical anomaly both trigger']
+    ]
+  },
+  voltage:{
+    title:'ZMPT101B + SCT-013',
+    sub:'Voltage & Current Sensor Pair',
+    desc:'The ZMPT101B is an isolated AC voltage transformer module that safely steps line voltage down to a level the ESP32\'s ADC can read. The SCT-013 is a clip-on (non-invasive) current transformer — it clamps around a live wire and measures current without any direct electrical contact, which matters for a device installed outdoors.',
+    specs:[
+      ['ZMPT101B range','0–250V AC, isolated output ~0-3.3V'],
+      ['SCT-013 range','0–30A (clip-on split core, non-invasive)'],
+      ['Why both','Voltage alone can look normal while current spikes reveal a short — correlating both is what flags an electrical anomaly'],
+      ['Sample rate','Read continuously, compared against a rolling baseline']
+    ]
+  },
+  ultrasonic:{
+    title:'JSN-SR04T',
+    sub:'Waterproof Ultrasonic Distance Sensor',
+    desc:'A waterproof ultrasonic sensor mounted low on the pole, facing down toward the street. It sends a sound pulse and times the echo to measure the gap between itself and the water surface — as water rises, that gap shrinks, giving a direct, contact-free water-level reading even in murky floodwater.',
+    specs:[
+      ['Range','20cm – 600cm'],
+      ['Method','Time-of-flight ultrasonic echo (non-contact)'],
+      ['Why ultrasonic','Works underwater-adjacent and in debris-filled flood conditions where float switches jam'],
+      ['Output','Distance-to-surface, converted to water level by the ESP32']
+    ]
+  },
+  rain:{
+    title:'Rain Intensity Sensor',
+    sub:'Conductive Rain Plate / Gauge',
+    desc:'A simple conductive-plate rain sensor that measures how much of its surface is wet, giving a live rain-intensity value. Combined with the water-level trend, this is what lets the AI engine tell the difference between "it rained but water is draining fine" and "rain is outpacing drainage — flood risk climbing."',
+    specs:[
+      ['Output','Analog wetness/intensity value, 0–100%'],
+      ['Why it matters','Leading indicator — rises before the water-level sensor does'],
+      ['Used for','Flood risk score alongside the ultrasonic water-level reading']
+    ]
+  }
+};
+
+function buildPoles(){
+  const row = $('#polesRow');
+  row.innerHTML='';
+  state.poles.forEach((p,i)=>{
+    const div = document.createElement('div');
+    div.className='pole-unit';
+    div.dataset.idx=i;
+    div.innerHTML = `
+      <div class="pole-status-lamp ok" id="lamp-${i}"></div>
+      <div class="pole-label">POLE ${p.id}</div>
+      ${poleSVG(i)}
+      <div class="pole-water" id="polewater-${i}"></div>
+    `;
+    div.addEventListener('click', (e)=>{
+      const hs = e.target.closest('.hotspot');
+      if(hs){ openComponentModal(i, hs.dataset.comp); }
+      else { openModal(i); }
+    });
+    row.appendChild(div);
+  });
+}
+
+function renderPoles(){
+  state.poles.forEach((p,i)=>{
+    const lamp = $('#lamp-'+i);
+    lamp.className = 'pole-status-lamp ' + (p.isolated?'off':(p.status==='crit'?'crit':p.status==='warn'?'warn':'ok'));
+    const w = $('#polewater-'+i);
+    w.style.height = Math.min(p.waterLevel,100)*1.6+'px';
+    const boardLed = document.getElementById('board-led-'+i);
+    const tled = document.getElementById('tled-'+i);
+    if(boardLed){
+      const c = p.isolated?'#3a4552':(p.status==='crit'?'#ff4d4f':p.status==='warn'?'#ffb020':'#2ee6a6');
+      boardLed.setAttribute('fill', c);
+    }
+    if(tled){ tled.setAttribute('fill', p.isolated?'#3a4552':'#ffb020'); }
+    // sonar ping pulse when running
+    const sonar = document.getElementById('sonar-'+i);
+    if(sonar && state.running && !p.isolated){
+      sonar.style.transition='none'; sonar.setAttribute('r','2'); sonar.style.opacity='.9';
+      requestAnimationFrame(()=>{ sonar.style.transition='all .9s ease-out'; sonar.setAttribute('r','9'); sonar.style.opacity='0'; });
+    }
+  });
+  // pole health tab
+  const list = $('#poleHealthList');
+  list.innerHTML = state.poles.map(p=>`
+    <div class="pole-health-row">
+      <span class="pname">${p.id}</span>
+      <span style="color:var(--text-dim);">${p.voltage.toFixed(0)}V / ${p.current.toFixed(1)}A</span>
+      <span class="pill ${p.isolated?'off':p.status}">${p.isolated?'ISOLATED':p.status.toUpperCase()}</span>
+    </div>`).join('');
+}
+
+// ============ RENDER: ENVIRONMENT ============
+function renderEnvironment(){
+  const sky = $('#sky');
+  const darkness = Math.min(state.rain/100, 1);
+  sky.style.background = `linear-gradient(180deg,
+     rgba(${10-darkness*6},${16-darkness*8},${22-darkness*10},1) 0%,
+     rgba(${12-darkness*6},${20-darkness*10},${27-darkness*12},1) 55%,
+     rgba(${10-darkness*5},${18-darkness*9},${24-darkness*10},1) 100%)`;
+
+  const rainLayer = $('#rainLayer');
+  rainLayer.style.opacity = state.rain>5 ? Math.min(state.rain/100+0.15,0.9) : 0;
+
+  const flood = $('#floodStreet');
+  flood.style.height = Math.min(state.water,100)*1.4+'px';
+
+  const badge = $('#riskBadge');
+  const risk = combinedRisk();
+  badge.textContent = risk>=70?'CRITICAL':risk>=35?'ELEVATED':'NOMINAL';
+  badge.className = 'riskbadge ' + (risk>=70?'crit':risk>=35?'warn':'');
+
+  $('#locName').textContent = state.location.split(',')[0].toUpperCase();
+
+  const refl = $('#reflection');
+  refl.style.opacity = state.water>15 ? Math.min(0.15+state.water/150,0.55) : 0;
+}
+
+function ensureRaindrops(){
+  const layer = $('#rainLayer');
+  if(layer.childElementCount>0) return;
+  for(let i=0;i<70;i++){
+    const d=document.createElement('div');
+    d.className='raindrop';
+    d.style.left = Math.random()*100+'%';
+    d.style.height = (10+Math.random()*16)+'px';
+    d.style.animationDuration = (0.5+Math.random()*0.6)+'s';
+    d.style.animationDelay = (Math.random()*2)+'s';
+    layer.appendChild(d);
+  }
+}
+
+// ============ FLOW DIAGRAM ============
+const flowDefs = [
+  {k:'sensor', icon:'📡', lbl:'SENSOR ARRAY'},
+  {k:'edge', icon:'🧠', lbl:'ESP32 EDGE'},
+  {k:'net', icon:'📶', lbl:'WIFI LINK'},
+  {k:'cloud', icon:'☁️', lbl:'SUPABASE'},
+  {k:'ai', icon:'⚙️', lbl:'AI ENGINE'},
+  {k:'app', icon:'🖥️', lbl:'DASHBOARD'},
+];
+function buildFlow(){
+  const wrap = $('#flowStages');
+  wrap.innerHTML = flowDefs.map((f,i)=>`
+    <div class="flow-node" id="fn-${f.k}">
+      <div class="icon">${f.icon}</div>
+      <div class="lbl">${f.lbl}<br><span class="sub" id="fs-${f.k}">--</span></div>
+    </div>`).join('');
+  // lines
+  const n = flowDefs.length;
+  for(let i=0;i<n-1;i++){
+    const line = document.createElement('div');
+    line.className='flow-line';
+    line.style.left = `calc(${(i/(n-1))*100}% + 45px)`;
+    line.style.width = `calc(${100/(n-1)}% - 90px)`;
+    line.id = 'line-'+i;
+    wrap.appendChild(line);
+  }
+}
+function spawnPacket(lineIdx, color){
+  const line = $('#line-'+lineIdx);
+  if(!line) return;
+  const p = document.createElement('div');
+  p.className='packet';
+  p.style.background = color; p.style.boxShadow = `0 0 8px ${color}`;
+  line.appendChild(p);
+  setTimeout(()=>p.remove(),1650);
+}
+let flowTimer=null;
+function updateFlowStatus(){
+  const risk = combinedRisk();
+  const color = risk>=70?'#ff4d4f':risk>=35?'#ffb020':'#3fd0ff';
+  flowDefs.forEach(f=>{
+    const node = $('#fn-'+f.k);
+    const sub = $('#fs-'+f.k);
+    let active = state.running && !(state.netDown && (f.k==='net'||f.k==='cloud'||f.k==='ai'||f.k==='app'));
+    node.classList.toggle('active', active);
+    if(f.k==='sensor') sub.textContent = state.poles.some(p=>p.sensorFail)?'FAULT':'OK';
+    if(f.k==='edge') sub.textContent = risk>=70?'CRIT':risk>=35?'WARN':'OK';
+    if(f.k==='net') sub.textContent = state.netDown?'DOWN':'LINKED';
+    if(f.k==='cloud') sub.textContent = state.netDown?'STALE':'SYNC';
+    if(f.k==='ai') sub.textContent = risk+'%';
+    if(f.k==='app') sub.textContent = state.netDown?'CACHED':'LIVE';
+  });
+  $('#commStatusTag').textContent = 'LINK: ' + (state.netDown? 'DEGRADED — EDGE LOCAL MODE':'NOMINAL');
+  if(state.running){
+    for(let i=0;i<flowDefs.length-1;i++){
+      if(state.netDown && i>=2) continue;
+      if(Math.random()<0.85) spawnPacket(i,color);
+    }
+  }
+}
+
+// ============ AI ENGINE ============
+function combinedRisk(){
+  const fr = floodRisk();
+  const er = elecRisk();
+  return Math.round(fr*0.55 + er*0.45);
+}
+function floodRisk(){
+  return Math.min(100, Math.round(state.water*0.75 + state.rain*0.25));
+}
+function elecRisk(){
+  const maxWater = Math.max(...state.poles.map(p=>p.waterLevel));
+  const anomaly = state.poles.some(p=>Math.abs(p.voltage-230)>18 || Math.abs(p.current-4.2)>1.6) ? 1:0;
+  return Math.min(100, Math.round(maxWater*0.6 + anomaly*40));
+}
+function renderAI(){
+  const fr = floodRisk(), er = elecRisk(), risk = combinedRisk();
+  $('#aiRain').textContent = state.rain+'%';
+  $('#aiWater').textContent = state.water+'%';
+  $('#aiVolt').textContent = er>50?'UNSTABLE':'Stable';
+  $('#aiCurr').textContent = er>50?'DETECTED':'None';
+  $('#floodRiskPct').textContent = fr+'%';
+  $('#elecRiskPct').textContent = er+'%';
+  const frBar=$('#floodRiskBar'), erBar=$('#elecRiskBar');
+  frBar.style.width=fr+'%'; frBar.style.background = fr>=70?'#ff4d4f':fr>=35?'#ffb020':'#2ee6a6';
+  erBar.style.width=er+'%'; erBar.style.background = er>=70?'#ff4d4f':er>=35?'#ffb020':'#2ee6a6';
+
+  const level = risk>=70?'crit':risk>=35?'warn':'ok';
+  $('#threatLevel').className = 'threat-level ' + (level==='ok'?'':level);
+  $('#threatLevel').textContent = 'THREAT: ' + (level==='crit'?'CRITICAL':level==='warn'?'ELEVATED':'NOMINAL');
+  const verdict = $('#aiVerdict');
+  verdict.className = 'ai-verdict ' + (level==='ok'?'':level);
+  if(level==='crit'){
+    verdict.textContent = `Flood conditions combined with electrical anomalies indicate a high probability of infrastructure danger. Combined threat level CRITICAL (${risk}%). Automatic isolation recommended for affected poles.`;
+  } else if(level==='warn'){
+    verdict.textContent = `Rising water level correlated with rainfall trend. Electrical readings within tolerance but trending abnormal. Continued monitoring advised.`;
+  } else {
+    verdict.textContent = `All sensor channels reporting within normal bounds. No correlated risk detected.`;
+  }
+}
+
+// ============ TIMELINE ============
+function renderTimeline(){
+  $('#timeline').innerHTML = state.timeline.map(t=>
+    `<div class="tl-item ${t.level}"><div class="t">${t.t}</div><div class="m">${t.m}</div></div>`).join('');
+}
+
+// ============ MODAL ============
+function openModal(i){
+  const p = state.poles[i];
+  $('#modalTitle').textContent = 'POLE '+p.id+' — HARDWARE DETAIL';
+  $('#modalBody').innerHTML = `
+    <div class="readout"><div class="l">VOLTAGE (ZMPT101B)</div><div class="v ${Math.abs(p.voltage-230)>18?'crit':''}">${p.voltage.toFixed(1)} V</div></div>
+    <div class="readout"><div class="l">CURRENT</div><div class="v ${Math.abs(p.current-4.2)>1.6?'crit':''}">${p.current.toFixed(2)} A</div></div>
+    <div class="readout"><div class="l">WATER LEVEL (JSN-SR04T)</div><div class="v ${p.waterLevel>60?'crit':p.waterLevel>30?'warn':''}">${p.waterLevel.toFixed(0)} cm</div></div>
+    <div class="readout"><div class="l">RAIN INTENSITY</div><div class="v">${state.rain}%</div></div>
+    <div class="readout"><div class="l">POLE STATUS</div><div class="v ${p.status==='crit'?'crit':p.status==='warn'?'warn':''}">${p.isolated?'ISOLATED':p.status.toUpperCase()}</div></div>
+    <div class="readout"><div class="l">COMM / NETWORK</div><div class="v ${state.netDown?'warn':''}">${state.netDown?'EDGE-LOCAL':'ONLINE'}</div></div>
+    <div class="readout"><div class="l">SENSOR HEALTH</div><div class="v ${p.sensorFail?'crit':''}">${p.sensorFail?'FAULT':'OK'}</div></div>
+    <div class="readout"><div class="l">POLE ID</div><div class="v" style="font-size:14px;">${p.id}</div></div>
+  `;
+  $('#modalIsolate').onclick = ()=>{ isolatePole(i); openModal(i); };
+  $('#modalRestore').onclick = ()=>{ restorePole(i); openModal(i); };
+  $('#modalBackdrop').classList.add('show');
+  $('#modalBackdrop').dataset.idx = i;
+}
+function liveValueFor(comp, p){
+  switch(comp){
+    case 'esp32': return [['Comm status', state.netDown?'EDGE-LOCAL (no cloud)':'ONLINE'],['Classification', p.isolated?'ISOLATED':p.status.toUpperCase()]];
+    case 'transformer': return [['Voltage', p.voltage.toFixed(1)+' V'],['Current', p.current.toFixed(2)+' A']];
+    case 'voltage': return [['Voltage', p.voltage.toFixed(1)+' V'],['Current', p.current.toFixed(2)+' A']];
+    case 'ultrasonic': return [['Water level', p.waterLevel.toFixed(0)+' cm'],['Sensor health', p.sensorFail?'FAULT':'OK']];
+    case 'rain': return [['Rain intensity', state.rain+'%']];
+    default: return [];
+  }
+}
+function openComponentModal(i, comp){
+  const p = state.poles[i];
+  const info = COMPONENT_INFO[comp];
+  if(!info) return;
+  $('#modalTitle').textContent = info.title + ' — POLE ' + p.id;
+  const live = liveValueFor(comp, p);
+  $('#modalBody').innerHTML = `
+    <div style="grid-column:1/-1;">
+      <div style="font-size:11px;color:var(--cyan);letter-spacing:1px;margin-bottom:4px;">${info.sub}</div>
+      <div style="font-size:12.5px;line-height:1.6;color:var(--text);margin-bottom:12px;">${info.desc}</div>
+    </div>
+    ${info.specs.map(s=>`
+      <div class="readout"><div class="l">${s[0].toUpperCase()}</div><div class="v" style="font-size:12.5px;">${s[1]}</div></div>
+    `).join('')}
+    ${live.length?`<div style="grid-column:1/-1;font-size:9.5px;color:var(--text-dim);letter-spacing:1px;margin:10px 0 -2px;">LIVE READING</div>`:''}
+    ${live.map(s=>`
+      <div class="readout"><div class="l">${s[0].toUpperCase()}</div><div class="v">${s[1]}</div></div>
+    `).join('')}
+  `;
+  $('#modalIsolate').onclick = ()=>{ isolatePole(i); openComponentModal(i, comp); };
+  $('#modalRestore').onclick = ()=>{ restorePole(i); openComponentModal(i, comp); };
+  $('#modalBackdrop').classList.add('show');
+}
+$('#modalClose').onclick = ()=> $('#modalBackdrop').classList.remove('show');
+$('#modalBackdrop').addEventListener('click',e=>{ if(e.target.id==='modalBackdrop') e.currentTarget.classList.remove('show'); });
+
+function isolatePole(i){
+  const p = state.poles[i];
+  if(p.isolated) return;
+  p.isolated = true;
+  log(`Automatic pole isolation initiated — ${p.id} power line disconnected.`,'crit');
+  spawnSparkOnPole(i);
+  renderPoles();
+}
+function restorePole(i){
+  const p = state.poles[i];
+  p.isolated = false;
+  log(`Pole ${p.id} restored to service.`,'ok');
+  renderPoles();
+}
+function spawnSparkOnPole(i){
+  const unit = document.querySelectorAll('.pole-unit')[i];
+  if(!unit) return;
+  const s = document.createElement('div');
+  s.className='spark';
+  s.style.top='60px'; s.style.left='50%';
+  unit.appendChild(s);
+  setTimeout(()=>s.remove(),500);
+}
+
+// ============ SIM TICK ============
+let simTimer=null;
+function tick(){
+  state.simSeconds += 5;
+  $('#clockTime').textContent = fmtClock(state.simSeconds);
+
+  if(state.running){
+    // auto progress rain/water gently if scenario calls for it
+    if(['B','C','D','G'].includes(state.scenario) && state.rain<95){
+      state.rain = Math.min(100, state.rain + (2+Math.random()*3));
+      $('#rainSlider').value = state.rain; $('#rainVal').textContent=Math.round(state.rain)+'%';
+    }
+    if(['C','D','G'].includes(state.scenario) && state.water < state.rain*0.9){
+      state.water = Math.min(100, state.water + (1.5+Math.random()*2.5));
+      $('#waterSlider').value = state.water; $('#waterVal').textContent=Math.round(state.water)+'%';
+    }
+  }
+
+  // update poles from global rain/water + per-pole variance
+  state.poles.forEach((p,idx)=>{
+    if(p.isolated){ p.voltage=0; p.current=0; p.status='off'; return; }
+    const variance = (idx-1)*6; // pole 0 lower exposure, pole 2 higher
+    const localWater = Math.max(0, Math.min(100, state.water + variance*(state.scenario==='G'?1:0.3)));
+    p.waterLevel = localWater;
+    p.rainLocal = state.rain;
+
+    if(p.sensorFail){
+      p.voltage = NaN; p.current = NaN; p.status='warn';
+      return;
+    }
+
+    const anomalyChance = localWater>55 ? 0.5 : 0.05;
+    const anomaly = Math.random() < anomalyChance;
+    p.voltage = anomaly ? 230 + (Math.random()>0.5? 1:-1)*(20+Math.random()*15) : 230 + (Math.random()-0.5)*4;
+    p.current = anomaly ? 4.2 + (Math.random()>0.5?1:-1)*(2+Math.random()*2) : 4.2 + (Math.random()-0.5)*0.4;
+
+    const elecBad = Math.abs(p.voltage-230)>18 || Math.abs(p.current-4.2)>1.6;
+    if(localWater>=65 && elecBad) p.status='crit';
+    else if(localWater>=35 || elecBad) p.status='warn';
+    else p.status='ok';
+  });
+
+  // events / logging based on transitions
+  const risk = combinedRisk();
+  if(state.running){
+    if(state.water>10 && state.water<15 && !state._loggedRainStart){
+      log('Water level sensor detected initial rise.','ok'); state._loggedRainStart=true;
+    }
+    if(risk>=35 && !state._loggedWarn){
+      log('ESP32 classified event as Flood Warning. Telemetry transmitted to cloud.','warn'); state._loggedWarn=true;
+    }
+    if(risk>=70 && !state._loggedCrit){
+      log('AI detected abnormal correlation — Critical infrastructure risk identified.','crit');
+      log('Admin alert triggered: ⚠ Critical Flood Level Detected — AI Risk Score HIGH.','crit');
+      state._loggedCrit=true;
+      if($('#autoIsolate').checked){
+        const worst = worstPoleIdx();
+        if(worst>=0 && !state.poles[worst].isolated) isolatePole(worst);
+      }
+    }
+    if(risk<30){ state._loggedWarn=false; state._loggedCrit=false; }
+  }
+
+  renderPoles();
+  renderEnvironment();
+  renderAI();
+  updateFlowStatus();
+}
+
+function worstPoleIdx(){
+  let worst=-1, worstScore=-1;
+  state.poles.forEach((p,i)=>{
+    const score = p.waterLevel + (Math.abs(p.voltage-230)||0);
+    if(!p.isolated && score>worstScore){ worstScore=score; worst=i; }
+  });
+  return worst;
+}
+
+// ============ CONTROLS ============
+$('#btnStart').onclick = ()=>{
+  state.running = true;
+  ensureRaindrops();
+  log('Simulation started.','ok');
+};
+$('#btnPause').onclick = ()=>{ state.running=false; log('Simulation paused.','warn'); };
+$('#btnReset').onclick = ()=>{
+  state.running=false; state.rain=0; state.water=0; state.netDown=false;
+  state._loggedWarn=false; state._loggedCrit=false; state._loggedRainStart=false;
+  state.poles.forEach(p=>{p.isolated=false;p.sensorFail=false;p.status='ok';p.voltage=230;p.current=4.2;p.waterLevel=0;});
+  $('#rainSlider').value=0; $('#waterSlider').value=0;
+  $('#rainVal').textContent='0%'; $('#waterVal').textContent='0%';
+  state.timeline=[];
+  renderTimeline();
+  log('Simulation reset to Stage 1 — Normal Condition.','ok');
+};
+$('#rainSlider').oninput = e=>{ state.rain=+e.target.value; $('#rainVal').textContent=state.rain+'%'; };
+$('#waterSlider').oninput = e=>{ state.water=+e.target.value; $('#waterVal').textContent=state.water+'%'; };
+
+$('#btnFaultSensor').onclick = ()=>{
+  const idx = Math.floor(Math.random()*POLE_COUNT);
+  state.poles[idx].sensorFail = true;
+  log(`Sensor fault simulated on pole ${state.poles[idx].id} — data stream lost.`,'warn');
+};
+$('#btnFaultNet').onclick = ()=>{
+  state.netDown = !state.netDown;
+  log(state.netDown? 'Network failure simulated — ESP32 edge units switched to local monitoring mode.' : 'Network connection restored — cloud sync resumed.', state.netDown?'warn':'ok');
+};
+$('#btnIsolateWorst').onclick = ()=>{
+  const i = worstPoleIdx();
+  if(i>=0) isolatePole(i); else log('No pole meets isolation criteria.','ok');
+};
+$('#btnRestoreAll').onclick = ()=>{ state.poles.forEach((p,i)=>restorePole(i)); };
+
+// scenario chips
+$$('.chip[data-sc]').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    $$('.chip[data-sc]').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    state.scenario = chip.dataset.sc;
+    applyScenario(state.scenario);
+  });
+});
+function applyScenario(sc){
+  log(`Scenario ${sc} selected — ${chipLabel(sc)}.`,'ok');
+  if(sc==='A'){ state.rain=0; state.water=0; state.netDown=false; state.poles.forEach(p=>p.sensorFail=false); }
+  if(sc==='B'){ state.rain=40; state.water=5; }
+  if(sc==='C'){ state.rain=55; state.water=35; }
+  if(sc==='D'){ state.rain=70; state.water=65; }
+  if(sc==='E'){ state.poles[1].sensorFail=true; }
+  if(sc==='F'){ state.netDown=true; }
+  if(sc==='G'){ state.rain=60; state.water=50; }
+  $('#rainSlider').value=state.rain; $('#waterSlider').value=state.water;
+  $('#rainVal').textContent=Math.round(state.rain)+'%'; $('#waterVal').textContent=Math.round(state.water)+'%';
+}
+function chipLabel(sc){
+  return {A:'Normal Weather',B:'Heavy Rain',C:'Urban Flood',D:'Electrical Infrastructure Risk',E:'Sensor Failure',F:'Network Failure',G:'Multiple Locations'}[sc];
+}
+
+// location chips + search
+$$('.chip[data-loc]').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    $$('.chip[data-loc]').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    state.location = chip.dataset.loc;
+    $('#locSearch').value='';
+    renderEnvironment();
+    log(`Map focused on ${state.location}.`,'ok');
+  });
+});
+$('#locSearch').addEventListener('keydown', e=>{
+  if(e.key==='Enter' && e.target.value.trim()){
+    state.location = e.target.value.trim();
+    renderEnvironment();
+    log(`Map focused on ${state.location}.`,'ok');
+  }
+});
+
+// tabs
+$$('.tabs button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    $$('.tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    $('#tabTimeline').style.display = btn.dataset.tab==='timeline'?'block':'none';
+    $('#tabPoles').style.display = btn.dataset.tab==='poles'?'block':'none';
+  });
+});
+
+// ============ INIT ============
+buildPoles();
+buildFlow();
+renderPoles();
+renderEnvironment();
+renderAI();
+renderTimeline();
+log('System initialized. Stage 1 — Normal Condition.','ok');
+simTimer = setInterval(tick, 900);
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Operations Overview — GRIDGUARD Citizen Portal</title>
+  <title>Operations & Flood Forecasting Overview — GRIDGUARD Citizen Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -18,12 +18,10 @@
       margin: 0;
       transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
     .stat-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 12px 40px rgba(0, 191, 255, 0.12), 0 0 1px rgba(0, 229, 255, 0.3);
     }
-
     .stat-icon {
       width: 52px;
       height: 52px;
@@ -33,25 +31,21 @@
       justify-content: center;
       flex-shrink: 0;
     }
-
     .stat-icon.total {
       background: linear-gradient(135deg, rgba(0, 191, 255, 0.2), rgba(0, 119, 182, 0.15));
       color: #00BFFF;
       box-shadow: 0 0 15px rgba(0, 191, 255, 0.15);
     }
-
     .stat-icon.pending {
       background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(217, 119, 6, 0.15));
       color: #fbbf24;
       box-shadow: 0 0 15px rgba(251, 191, 36, 0.15);
     }
-
     .stat-icon.resolved {
       background: linear-gradient(135deg, rgba(0, 255, 157, 0.15), rgba(5, 150, 105, 0.12));
       color: #00FF9D;
       box-shadow: 0 0 15px rgba(0, 255, 157, 0.12);
     }
-
     .stat-value {
       font-size: 1.75rem;
       font-weight: 800;
@@ -60,18 +54,16 @@
       letter-spacing: -0.02em;
       color: #f8fafc;
     }
-
     .stat-label {
       font-size: 0.82rem;
       color: #64748b;
       font-weight: 500;
     }
-
     .advisory-card {
       border-left: 4px solid var(--accent-blue);
       position: relative;
+      margin-bottom: 2rem;
     }
-
     .advisory-card::after {
       content: '';
       position: absolute;
@@ -80,47 +72,60 @@
       bottom: 0;
       width: 4px;
       background: linear-gradient(180deg, #00BFFF, #00FF9D);
-      border-radius: 0 0 0 0;
     }
-
     .advisory-icon {
       color: #00BFFF;
       filter: drop-shadow(0 0 6px rgba(0, 191, 255, 0.4));
     }
 
-    .advisory-title {
-      font-size: 1rem;
+    /* Weather Forecast Map Component for Citizens */
+    .forecast-section {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
+    .forecast-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+    .forecast-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .forecast-card:hover, .forecast-card.active {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.08);
+      transform: translateY(-2px);
+    }
+    .risk-tag {
+      font-size: 0.68rem;
       font-weight: 700;
-      color: #f8fafc;
+      padding: 2px 6px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
     }
-
-    .advisory-text {
-      font-size: 0.9rem;
-      color: #94a3b8;
-      line-height: 1.6;
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.25rem;
-    }
-
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #f8fafc;
-      letter-spacing: -0.01em;
-    }
+    .risk-normal { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid #059669; }
+    .risk-watch { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid #2563eb; }
+    .risk-warning { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid #d97706; }
+    .risk-critical { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid #dc2626; }
   </style>
 </head>
 <body>
   <main class="main-content">
     <div class="page-header">
       <div>
-        <h1 class="page-title">Citizen Infrastructure Overview</h1>
-        <p class="page-desc">Track active grid reports, view response status, and report new issues.</p>
+        <h1 class="page-title">Citizen Infrastructure &amp; Weather Dashboard</h1>
+        <p class="page-desc">Real-time flood forecasting, district surveillance, and community report tracking.</p>
       </div>
       <div style="display: flex; gap: 0.75rem;">
         <a href="report-issue.html" class="btn btn-primary">
@@ -169,17 +174,75 @@
     <div class="card advisory-card">
       <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 0.5rem;">
         <i data-lucide="radio" class="advisory-icon"></i>
-        <h3 class="advisory-title">Active Grid Advisory — Ward 4 Sector</h3>
+        <h3 class="advisory-title">Active Grid Advisory — Ward 4 Sector &amp; Coastal Belt</h3>
       </div>
       <p class="advisory-text">
-        Maintenance teams are currently responding to severe wind-related power line disruptions near Elm Street. Priority response units dispatched.
+        Maintenance teams are responding to severe wind &amp; precipitation-related power line disruptions. Priority response units dispatched.
       </p>
+    </div>
+
+    <!-- 🌧️ CITIZEN FLOOD FORECASTING MAP SECTION 🌧️ -->
+    <div class="forecast-section">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #1e293b; padding-bottom: 1rem;">
+        <div>
+          <h2 style="color: white; font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="cloud-rain" style="color: #38bdf8;"></i> Tamil Nadu Regional Flood &amp; Weather Forecast
+          </h2>
+          <p style="color: #94a3b8; font-size: 0.85rem; margin-top: 0.2rem;">
+            Live weather surveillance and district flood inundation forecasting for citizens.
+          </p>
+        </div>
+        <span class="badge" style="background: rgba(56,189,248,0.1); color: #38bdf8; border: 1px solid #0284c7; padding: 0.4rem 0.8rem; font-family: monospace;">
+          <i data-lucide="radio"></i> LIVE API TELEMETRY
+        </span>
+      </div>
+
+      <!-- District Selector Forecast Grid -->
+      <div class="forecast-grid" id="citizen-forecast-grid">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- Selected District Forecast Detail -->
+      <div style="background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.25rem; margin-top: 1.25rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;" id="citizen-detail-box">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <h3 style="color: white; font-size: 1.2rem; font-weight: 700;" id="c-det-title">Chennai (சென்னை)</h3>
+            <span class="risk-tag risk-warning" id="c-det-badge">WARNING</span>
+          </div>
+          <p style="color: #cbd5e1; font-size: 0.88rem; margin-bottom: 1rem;" id="c-det-desc">
+            Heavy coastal precipitation causing water accumulation near low-lying roads.
+          </p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.75rem;">
+            <div style="background: #0f172a; padding: 0.6rem; border-radius: 6px;">
+              <span style="font-size: 0.68rem; color: #94a3b8; display: block;">RAINFALL</span>
+              <span style="font-size: 1rem; font-weight: 700; color: #60a5fa;" id="c-det-rain">34.5 mm</span>
+            </div>
+            <div style="background: #0f172a; padding: 0.6rem; border-radius: 6px;">
+              <span style="font-size: 0.68rem; color: #94a3b8; display: block;">TEMP</span>
+              <span style="font-size: 1rem; font-weight: 700; color: #fbbf24;" id="c-det-temp">31.2 °C</span>
+            </div>
+            <div style="background: #0f172a; padding: 0.6rem; border-radius: 6px;">
+              <span style="font-size: 0.68rem; color: #94a3b8; display: block;">WIND</span>
+              <span style="font-size: 1rem; font-weight: 700; color: white;" id="c-det-wind">21 km/h</span>
+            </div>
+          </div>
+        </div>
+        <div style="background: #0f172a; border-radius: 10px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <span style="font-size: 0.75rem; color: #94a3b8;">Forecast Risk Index</span>
+            <h4 style="font-size: 1.5rem; color: #38bdf8; font-weight: 800; font-family: monospace; margin-top: 0.2rem;" id="c-det-index">68%</h4>
+          </div>
+          <a href="report-issue.html" class="btn btn-secondary btn-sm" style="text-align: center; text-decoration: none; margin-top: 1rem;">
+            Report Flood Hazard in District
+          </a>
+        </div>
+      </div>
     </div>
 
     <!-- Recent Table -->
     <div class="card">
-      <div class="section-header">
-        <h2 class="section-title">Recent Complaint Submissions</h2>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h2 style="font-size: 1.1rem; font-weight: 700; color: #f8fafc;">Recent Complaint Submissions</h2>
         <a href="history.html" class="btn btn-secondary btn-sm">View Full History</a>
       </div>
       <div style="overflow-x: auto;">
@@ -208,6 +271,67 @@
       renderAppHeader('dashboard');
       renderAppFooter();
 
+      const TN_FORECASTS = [
+        { id: 'CHENNAI', name: 'Chennai', tamil: 'சென்னை', rain: 34.5, temp: 31.2, wind: 21, risk: 'Warning', ratio: 68, desc: 'Heavy coastal precipitation causing water accumulation near low-lying roads.' },
+        { id: 'CUDDALORE', name: 'Cuddalore', tamil: 'கடலூர்', rain: 58.4, temp: 29.5, wind: 26, risk: 'Critical', ratio: 88, desc: 'Severe coastal flood alert. High water logging along river delta.' },
+        { id: 'MADURAI', name: 'Madurai', tamil: 'மதுரை', rain: 38.2, temp: 30.1, wind: 18, risk: 'Warning', ratio: 64, desc: 'Vaigai Basin Rain Surge. Moderate inundation alert.' },
+        { id: 'TRICHY', name: 'Tiruchirappalli', tamil: 'திருச்சிராப்பள்ளி', rain: 16.5, temp: 32.0, wind: 14, risk: 'Watch', ratio: 42, desc: 'Intermittent rain showers. Water levels under monitoring.' },
+        { id: 'COIMBATORE', name: 'Coimbatore', tamil: 'கோயம்புத்தூர்', rain: 4.8, temp: 26.4, wind: 12, risk: 'Normal', ratio: 18, desc: 'Light passing drizzle. All drainage channels free-flowing.' },
+        { id: 'SALEM', name: 'Salem', tamil: 'சேலம்', rain: 8.2, temp: 29.8, wind: 11, risk: 'Normal', ratio: 22, desc: 'Overcast skies. No immediate flood threat.' },
+        { id: 'TIRUNELVELI', name: 'Tirunelveli', tamil: 'திருநெல்வேலி', rain: 22.4, temp: 28.5, wind: 16, risk: 'Watch', ratio: 48, desc: 'Moderate riverbank rainfall. Stay alert near low bridges.' },
+        { id: 'KANYAKUMARI', name: 'Kanyakumari', tamil: 'கன்னியாகுமரி', rain: 62.0, temp: 27.9, wind: 31, risk: 'Critical', ratio: 92, desc: 'High tide & coastal torrent. Critical inundation advisory active.' },
+      ];
+
+      let currentForecast = TN_FORECASTS[0];
+
+      function renderForecastGrid() {
+        const grid = document.getElementById('citizen-forecast-grid');
+        grid.innerHTML = TN_FORECASTS.map(f => `
+          <div class="forecast-card ${f.id === currentForecast.id ? 'active' : ''}" onclick="selectForecast('${f.id}')">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.4rem;">
+              <h4 style="color: white; font-weight: 700; font-size: 0.9rem;">${f.name}</h4>
+              <span class="risk-tag ${getRiskClass(f.risk)}">${f.risk}</span>
+            </div>
+            <div style="font-size: 0.75rem; color: #94a3b8;">${f.tamil}</div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #60a5fa; font-weight: 600; margin-top: 0.5rem;">
+              <span>☔ ${f.rain} mm</span>
+              <span>${f.temp} °C</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function selectForecast(id) {
+        currentForecast = TN_FORECASTS.find(f => f.id === id) || TN_FORECASTS[0];
+        renderForecastGrid();
+        updateForecastDetail();
+      }
+
+      function getRiskClass(r) {
+        switch(r) {
+          case 'Normal': return 'risk-normal';
+          case 'Watch': return 'risk-watch';
+          case 'Warning': return 'risk-warning';
+          case 'Critical': return 'risk-critical';
+          default: return 'risk-normal';
+        }
+      }
+
+      function updateForecastDetail() {
+        document.getElementById('c-det-title').textContent = `${currentForecast.name} (${currentForecast.tamil})`;
+        document.getElementById('c-det-desc').textContent = currentForecast.desc;
+        document.getElementById('c-det-rain').textContent = `${currentForecast.rain} mm`;
+        document.getElementById('c-det-temp').textContent = `${currentForecast.temp} °C`;
+        document.getElementById('c-det-wind').textContent = `${currentForecast.wind} km/h`;
+        document.getElementById('c-det-index').textContent = `${currentForecast.ratio}%`;
+
+        const badge = document.getElementById('c-det-badge');
+        badge.textContent = currentForecast.risk;
+        badge.className = `risk-tag ${getRiskClass(currentForecast.risk)}`;
+      }
+
+      window.selectForecast = selectForecast;
+
       document.addEventListener('DOMContentLoaded', () => {
         const reports = GridApp.get('reports', []);
         document.getElementById('dash-total-count').textContent = reports.length;
@@ -226,6 +350,9 @@
             <td><a href="status-tracking.html?id=${r.id}" class="btn btn-secondary btn-sm">Track Progress</a></td>
           </tr>
         `).join('');
+
+        renderForecastGrid();
+        updateForecastDetail();
 
         if (window.lucide) lucide.createIcons();
       });
