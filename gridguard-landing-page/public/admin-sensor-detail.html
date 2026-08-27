@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sensor Detail Diagnostics - Grid Guard Ops</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="admin-shell">
+  <main class="main-content" style="max-width: 1200px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+      <div>
+        <h1 class="page-title" style="color: #f8fafc;" id="pole-detail-title">Pole Telemetry Detail</h1>
+        <p style="color: #94a3b8; font-size: 0.875rem;" id="pole-detail-subtitle">Loading pole sensor telemetry...</p>
+      </div>
+      <a href="admin-incident-creation.html" class="btn btn-secondary btn-sm" style="background: rgba(0, 191, 255, 0.1); border: 1px solid var(--border-color); color: var(--accent-cyan);">
+        <i data-lucide="arrow-left"></i> Back to Sensor Alerts
+      </a>
+    </div>
+
+    <div id="pole-detail-content">
+    </div>
+  </main>
+
+  <script src="common.js"></script>
+  <script>
+    renderAppHeader('sensors');
+    renderAppFooter();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const poleId = urlParams.get('id') || 'POLE-W4-012';
+      const poles = GridApp.get('poles', []);
+      const pole = poles.find(p => p.id === poleId) || poles[0];
+
+      document.getElementById('pole-detail-title').textContent = `Sensor Node: ${pole.id}`;
+      document.getElementById('pole-detail-subtitle').textContent = `Location: ${pole.location} (Lat: ${pole.lat}, Lng: ${pole.lng})`;
+
+      const container = document.getElementById('pole-detail-content');
+      container.innerHTML = `
+        <div class="grid-2" style="margin-bottom: 1.5rem;">
+          <div class="admin-card">
+            <h3 style="font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 1rem;">Electrical Telemetry Readouts</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div style="background: var(--bg-main); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color);">
+                <span style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; display: block;">Bus Voltage</span>
+                <span style="font-size: 1.75rem; font-family: monospace; font-weight: 700; ${pole.voltage < 200 ? 'color: #fca5a5;' : 'color: #6ee7b7;'}">${pole.voltage} V</span>
+                <span style="font-size: 0.7rem; color: #94a3b8; display: block; margin-top: 0.25rem;">Nominal Standard: 240V AC</span>
+              </div>
+              <div style="background: var(--bg-main); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color);">
+                <span style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; display: block;">Phase Current</span>
+                <span style="font-size: 1.75rem; font-family: monospace; font-weight: 700; ${pole.current > 70 ? 'color: #fde047;' : 'color: #6ee7b7;'}">${pole.current} A</span>
+                <span style="font-size: 0.7rem; color: #94a3b8; display: block; margin-top: 0.25rem;">Max Continuous Rating: 65A</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <h3 style="font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 1rem;">Structural & Thermal Sensors</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div style="background: var(--bg-main); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color);">
+                <span style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; display: block;">Pole Gyro Tilt Angle</span>
+                <span style="font-size: 1.75rem; font-family: monospace; font-weight: 700; ${pole.tilt > 10 ? 'color: #fca5a5;' : 'color: #6ee7b7;'}">${pole.tilt}</span>
+                <span style="font-size: 0.7rem; color: #94a3b8; display: block; margin-top: 0.25rem;">Hazard Threshold: >10.0</span>
+              </div>
+              <div style="background: var(--bg-main); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color);">
+                <span style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; display: block;">Transformer Temp</span>
+                <span style="font-size: 1.75rem; font-family: monospace; font-weight: 700; ${pole.temp > 90 ? 'color: #fca5a5;' : 'color: #6ee7b7;'}">${pole.temp} C</span>
+                <span style="font-size: 0.7rem; color: #94a3b8; display: block; margin-top: 0.25rem;">Critical Limit: 85C</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <h3 style="font-size: 0.95rem; font-weight: 600; color: #cbd5e1; margin-bottom: 1rem; text-transform: uppercase;">
+            Historical Sensor Log Entries (Last 6 Hours)
+          </h3>
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Bus Voltage</th>
+                <th>Current</th>
+                <th>Tilt Angle</th>
+                <th>Trans. Temp</th>
+                <th>Sub-System Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-family: monospace;">2026-08-05 22:45:10</td>
+                <td style="font-family: monospace;">${pole.voltage} V</td>
+                <td style="font-family: monospace;">${pole.current} A</td>
+                <td style="font-family: monospace;">${pole.tilt}</td>
+                <td style="font-family: monospace;">${pole.temp} C</td>
+                <td><span class="telemetry-pill ${pole.status === 'CRITICAL' ? 'telemetry-crit' : pole.status === 'WARNING' ? 'telemetry-warn' : 'telemetry-normal'}">${pole.status}</span></td>
+              </tr>
+              <tr>
+                <td style="font-family: monospace;">2026-08-05 22:30:00</td>
+                <td style="font-family: monospace;">${(pole.voltage * 1.02).toFixed(0)} V</td>
+                <td style="font-family: monospace;">${(pole.current * 0.95).toFixed(1)} A</td>
+                <td style="font-family: monospace;">${pole.tilt}</td>
+                <td style="font-family: monospace;">${(pole.temp - 2.1).toFixed(1)} C</td>
+                <td><span class="telemetry-pill telemetry-normal">HEALTHY</span></td>
+              </tr>
+              <tr>
+                <td style="font-family: monospace;">2026-08-05 22:15:00</td>
+                <td style="font-family: monospace;">238 V</td>
+                <td style="font-family: monospace;">42.1 A</td>
+                <td style="font-family: monospace;">0.5</td>
+                <td style="font-family: monospace;">68.4 C</td>
+                <td><span class="telemetry-pill telemetry-normal">HEALTHY</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

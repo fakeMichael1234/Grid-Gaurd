@@ -476,6 +476,7 @@ body::after {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   font-family: var(--font-sans);
 }
 
@@ -486,6 +487,7 @@ body::after {
   background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
   opacity: 0;
   transition: opacity 0.3s;
+  z-index: -1;
 }
 
 .btn:hover::before {

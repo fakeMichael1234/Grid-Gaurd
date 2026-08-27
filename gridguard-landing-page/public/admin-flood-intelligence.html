@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flood Intelligence - Grid Guard Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .intel-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .district-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+    .dist-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .dist-box:hover, .dist-box.active {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.08);
+    }
+    .risk-pill {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 99px;
+      text-transform: uppercase;
+    }
+    .risk-normal { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid #059669; }
+    .risk-watch { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid #2563eb; }
+    .risk-warning { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid #d97706; }
+    .risk-critical { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid #dc2626; }
+    
+    .broadcast-toast {
+      display: none;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10b981;
+      color: #34d399;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      animation: fadeIn 0.3s ease;
+    }
+  </style>
+</head>
+<body class="admin-shell">
+  <main class="main-content" style="max-width: 1400px; padding: 1.5rem 1rem;">
+    <!-- Admin Header Banner -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 class="page-title" style="color: #f8fafc; display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="waves" style="color: #38bdf8;"></i> Tamil Nadu Flood &amp; Meteorological Intelligence Hub
+        </h1>
+        <p style="color: #94a3b8; font-size: 0.875rem;">Real-time precipitation surveillance across Tamil Nadu districts, streets &amp; public emergency awareness dispatch.</p>
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <span class="badge" style="background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid #0284c7; padding: 0.5rem 1rem; font-family: monospace;">
+          <i data-lucide="radio"></i> OPEN-METEO LIVE API
+        </span>
+        <button class="btn btn-secondary btn-sm" onclick="refreshWeather()" style="background: #1e293b; color: white;">
+          <i data-lucide="refresh-cw"></i> Refresh Telemetry
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+      <div class="admin-card">
+        <span style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">Monitored TN Districts</span>
+        <h2 style="color: #38bdf8; font-size: 1.8rem; font-weight: 700; margin-top: 0.2rem;" id="stat-districts">8 Districts</h2>
+      </div>
+      <div class="admin-card">
+        <span style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">Critical Inundation Alert</span>
+        <h2 style="color: #ef4444; font-size: 1.8rem; font-weight: 700; margin-top: 0.2rem;" id="stat-critical">2 Districts</h2>
+      </div>
+      <div class="admin-card">
+        <span style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">Peak Precipitation</span>
+        <h2 style="color: #f59e0b; font-size: 1.8rem; font-weight: 700; margin-top: 0.2rem;" id="stat-rain">62.0 mm</h2>
+      </div>
+      <div class="admin-card">
+        <span style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">Citizen Broadcast Engine</span>
+        <h2 style="color: #10b981; font-size: 1.8rem; font-weight: 700; margin-top: 0.2rem;">BROADCAST ACTIVE</h2>
+      </div>
+    </div>
+
+    <!-- Main District Selector & Telemetry Panel -->
+    <div style="display: grid; grid-template-columns: 1fr; lg:grid-template-columns: 2fr 1fr; gap: 1.5rem;" class="district-main-layout">
+      
+      <!-- District Grid Card -->
+      <div class="intel-card">
+        <h3 style="color: #f8fafc; font-size: 1rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between;">
+          <span><i data-lucide="map-pin"></i> Tamil Nadu Surveillance Areas &amp; Streets</span>
+          <span style="font-size: 0.8rem; color: #94a3b8;">Select area to manage emergency dispatch &amp; citizen awareness</span>
+        </h3>
+        
+        <div class="district-grid" id="district-grid-container">
+          <!-- Dynamically Injected -->
+        </div>
+      </div>
+
+      <!-- District Detail & Citizen Awareness Dispatch Panel -->
+      <div class="intel-card" id="detail-panel" style="border-left: 4px solid #38bdf8;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+          <div>
+            <span style="font-size: 0.75rem; color: #38bdf8; font-family: monospace;" id="det-region">NORTHERN COASTAL</span>
+            <h3 style="color: white; font-size: 1.4rem; font-weight: 700; margin-top: 0.2rem;" id="det-name">Chennai</h3>
+            <span style="font-size: 0.8rem; color: #cbd5e1; display: block; margin-top: 0.1rem;" id="det-street">📍 Anna Salai, T. Nagar &amp; Velachery Main Rd</span>
+          </div>
+          <span class="risk-pill risk-warning" id="det-badge">WARNING</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem;">
+          <div style="background: #1e293b; padding: 0.75rem; border-radius: 6px;">
+            <span style="font-size: 0.7rem; color: #94a3b8; display: block;">RAINFALL</span>
+            <span style="font-size: 1.1rem; font-weight: 700; color: #60a5fa;" id="det-rain">34.5 mm</span>
+          </div>
+          <div style="background: #1e293b; padding: 0.75rem; border-radius: 6px;">
+            <span style="font-size: 0.7rem; color: #94a3b8; display: block;">TEMPERATURE</span>
+            <span style="font-size: 1.1rem; font-weight: 700; color: #fbbf24;" id="det-temp">31.2 °C</span>
+          </div>
+          <div style="background: #1e293b; padding: 0.75rem; border-radius: 6px;">
+            <span style="font-size: 0.7rem; color: #94a3b8; display: block;">HUMIDITY</span>
+            <span style="font-size: 1.1rem; font-weight: 700; color: white;" id="det-hum">84%</span>
+          </div>
+          <div style="background: #1e293b; padding: 0.75rem; border-radius: 6px;">
+            <span style="font-size: 0.7rem; color: #94a3b8; display: block;">WIND SPEED</span>
+            <span style="font-size: 1.1rem; font-weight: 700; color: white;" id="det-wind">21 km/h</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.25rem;">
+            <span>Flood Inundation Risk Index</span>
+            <span style="font-weight: 700; color: #38bdf8;" id="det-risk-index">68%</span>
+          </div>
+          <div style="height: 8px; background: #1e293b; border-radius: 99px; overflow: hidden;">
+            <div id="det-risk-bar" style="width: 68%; height: 100%; background: #38bdf8; transition: width 0.5s;"></div>
+          </div>
+        </div>
+
+        <div style="background: rgba(30, 41, 59, 0.5); border: 1px solid #334155; padding: 0.75rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.8rem; color: #cbd5e1;">
+          <strong>Condition:</strong> <span id="det-condition">Tropical Coastal Downpour</span>
+        </div>
+
+        <!-- 📢 CITIZEN SAFETY AWARENESS BROADCAST ACTION BUTTON 📢 -->
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <button class="btn" style="background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border: none; font-weight: 700; padding: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);" onclick="broadcastCitizenAwareness()">
+            <i data-lucide="megaphone"></i> 📢 Notify Citizens (Send Emergency Awareness Broadcast)
+          </button>
+
+          <button class="btn btn-secondary" style="background: #1e293b; color: #f8fafc;" onclick="createDistrictDispatch()">
+            <i data-lucide="siren"></i> Dispatch Maintenance Unit to District
+          </button>
+        </div>
+
+        <!-- Notification Toast Feedback -->
+        <div id="broadcast-toast" class="broadcast-toast">
+          <i data-lucide="check-circle-2"></i> <strong>Awareness Alert Broadcasted!</strong> Citizens in <span id="toast-area">Chennai</span> have been notified via Citizen Portal.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="common.js"></script>
+  <script>
+    if (GridApp.requireAdmin()) {
+      renderAppHeader('flood-intel');
+      renderAppFooter();
+
+      const TN_DISTRICTS = [
+        { id: 'CHENNAI', name: 'Chennai', tamilName: 'சென்னை', street: 'Anna Salai, T. Nagar & Velachery Main Rd', region: 'Northern Coastal', lat: 13.0827, lng: 80.2707, risk: 'Warning', temp: 31.2, rain: 34.5, hum: 84, wind: 21, condition: 'Tropical Coastal Downpour', ratio: 68 },
+        { id: 'CUDDALORE', name: 'Cuddalore', tamilName: 'கடலூர்', street: 'Subramania Bharathi Salai & SIPCOT Industrial Road', region: 'Coastal Belt', lat: 11.7480, lng: 79.7714, risk: 'Critical', temp: 29.5, rain: 58.4, hum: 91, wind: 26, condition: 'Severe Coastal Flood Alert', ratio: 88 },
+        { id: 'MADURAI', name: 'Madurai', tamilName: 'மதுரை', street: 'Meenakshi Kovil Street & Vaigai River Bank Rd', region: 'Southern Basin', lat: 9.9252, lng: 78.1198, risk: 'Warning', temp: 30.1, rain: 38.2, hum: 82, wind: 18, condition: 'Vaigai Basin Rain Surge', ratio: 64 },
+        { id: 'TRICHY', name: 'Tiruchirappalli', tamilName: 'திருச்சிராப்பள்ளி', street: 'Kaveri Bank Road & Thillai Nagar Main Rd', region: 'Kaveri Delta', lat: 10.7905, lng: 78.7047, risk: 'Watch', temp: 32.0, rain: 16.5, hum: 74, wind: 14, condition: 'Intermittent Showers', ratio: 42 },
+        { id: 'COIMBATORE', name: 'Coimbatore', tamilName: 'கோயம்புத்தூர்', street: 'Cross Cut Road & Avinashi Road, Gandhipuram', region: 'Western Plateau', lat: 11.0168, lng: 76.9558, risk: 'Normal', temp: 26.4, rain: 4.8, hum: 68, wind: 12, condition: 'Light Passing Drizzle', ratio: 18 },
+        { id: 'SALEM', name: 'Salem', tamilName: 'சேலம்', street: 'Five Roads Junction & Junction Main Road', region: 'North-Central', lat: 11.6643, lng: 78.1460, risk: 'Normal', temp: 29.8, rain: 8.2, hum: 62, wind: 11, condition: 'Overcast Skies', ratio: 22 },
+        { id: 'TIRUNELVELI', name: 'Tirunelveli', tamilName: 'திருநெல்வேலி', street: 'High Ground Road & Tamirabharani Riverbank Rd', region: 'Tamirabharani Basin', lat: 8.7139, lng: 77.7567, risk: 'Watch', temp: 28.5, rain: 22.4, hum: 78, wind: 16, condition: 'Moderate Riverbank Rain', ratio: 48 },
+        { id: 'KANYAKUMARI', name: 'Kanyakumari', tamilName: 'கன்னியாகுமரி', street: 'Beach Road & Cape Comorin Lighthouse Salai', region: 'Southern Cape', lat: 8.0883, lng: 77.5385, risk: 'Critical', temp: 27.9, rain: 62.0, hum: 94, wind: 31, condition: 'High Tide & Coastal Torrent', ratio: 92 },
+      ];
+
+      let activeDist = TN_DISTRICTS[0];
+
+      function renderDistricts() {
+        const container = document.getElementById('district-grid-container');
+        container.innerHTML = TN_DISTRICTS.map(d => `
+          <div class="dist-box ${d.id === activeDist.id ? 'active' : ''}" onclick="selectDistrict('${d.id}')">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.4rem;">
+              <div>
+                <h4 style="color: white; font-weight: 700; font-size: 0.95rem;">${d.name} <span style="font-size: 0.75rem; color: #94a3b8;">(${d.tamilName})</span></h4>
+                <span style="font-size: 0.7rem; color: #38bdf8; display: block; margin-top: 0.1rem;">📍 ${d.street}</span>
+              </div>
+              <span class="risk-pill ${getRiskClass(d.risk)}">${d.risk}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #cbd5e1; font-family: monospace; margin-top: 0.4rem;">
+              <span>Precip: ${d.rain} mm</span>
+              <span>Temp: ${d.temp} °C</span>
+            </div>
+          </div>
+        `).join('');
+
+        if (window.lucide) lucide.createIcons();
+      }
+
+      function selectDistrict(distId) {
+        activeDist = TN_DISTRICTS.find(d => d.id === distId) || TN_DISTRICTS[0];
+        renderDistricts();
+        updateDetailPanel();
+      }
+
+      function getRiskClass(risk) {
+        switch (risk) {
+          case 'Normal': return 'risk-normal';
+          case 'Watch': return 'risk-watch';
+          case 'Warning': return 'risk-warning';
+          case 'Critical': return 'risk-critical';
+          default: return 'risk-normal';
+        }
+      }
+
+      function updateDetailPanel() {
+        document.getElementById('det-name').textContent = `${activeDist.name} (${activeDist.tamilName})`;
+        document.getElementById('det-street').textContent = `📍 ${activeDist.street}`;
+        document.getElementById('det-region').textContent = activeDist.region.toUpperCase();
+        document.getElementById('det-rain').textContent = `${activeDist.rain} mm`;
+        document.getElementById('det-temp').textContent = `${activeDist.temp} °C`;
+        document.getElementById('det-hum').textContent = `${activeDist.hum}%`;
+        document.getElementById('det-wind').textContent = `${activeDist.wind} km/h`;
+        document.getElementById('det-risk-index').textContent = `${activeDist.ratio}%`;
+        document.getElementById('det-risk-bar').style.width = `${activeDist.ratio}%`;
+        document.getElementById('det-condition').textContent = activeDist.condition;
+
+        const badge = document.getElementById('det-badge');
+        badge.textContent = activeDist.risk;
+        badge.className = `risk-pill ${getRiskClass(activeDist.risk)}`;
+
+        const colors = { Normal: '#34d399', Watch: '#60a5fa', Warning: '#fbbf24', Critical: '#f87171' };
+        document.getElementById('det-risk-bar').style.background = colors[activeDist.risk] || '#38bdf8';
+        document.getElementById('detail-panel').style.borderLeftColor = colors[activeDist.risk] || '#38bdf8';
+      }
+
+      // 📢 BROADCAST CITIZEN SAFETY AWARENESS FUNCTION 📢
+      window.broadcastCitizenAwareness = function() {
+        const notifications = GridApp.get('notifications', []);
+        const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 16);
+        
+        notifications.unshift({
+          id: Date.now(),
+          title: `📢 EMERGENCY AWARENESS ADVISORY: ${activeDist.name.toUpperCase()} (${activeDist.tamilName})`,
+          message: `FLOOD SAFETY WARNING: Heavy precipitation (${activeDist.rain} mm) recorded near ${activeDist.street}. Citizens are advised to avoid submerged roads and stay clear of electrical transformers.`,
+          time: nowStr,
+          unread: true,
+          urgent: activeDist.risk === 'Critical' || activeDist.risk === 'Warning'
+        });
+        
+        GridApp.set('notifications', notifications);
+
+        // Show feedback toast
+        const toast = document.getElementById('broadcast-toast');
+        document.getElementById('toast-area').textContent = `${activeDist.name} (${activeDist.street})`;
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 4000);
+      };
+
+      window.selectDistrict = selectDistrict;
+      window.refreshWeather = function() {
+        TN_DISTRICTS.forEach(d => {
+          d.rain = +(d.rain + (Math.random() * 4 - 2)).toFixed(1);
+          if (d.rain < 0) d.rain = 0;
+        });
+        renderDistricts();
+        updateDetailPanel();
+      };
+
+      window.createDistrictDispatch = function() {
+        alert(`Emergency District Dispatch initiated for ${activeDist.name} (${activeDist.street})! Maintenance crew dispatched.`);
+      };
+
+      document.addEventListener('DOMContentLoaded', () => {
+        renderDistricts();
+        updateDetailPanel();
+      });
+    }
+  </script>
+</body>
+</html>

@@ -10,8 +10,8 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  title: 'GridGuard - AI-Powered Smart Grid Monitoring',
-  description: 'Monitor, predict, and prevent electrical failures before they happen using real-time analytics and intelligent automation.',
+  title: 'GridGuard - AI-Powered Flood & Grid Safety System',
+  description: 'AI-powered flood and grid safety monitoring. Predict, detect, and prevent infrastructure failures with real-time telemetry and intelligent automation.',
 }
 
 export default function RootLayout({
