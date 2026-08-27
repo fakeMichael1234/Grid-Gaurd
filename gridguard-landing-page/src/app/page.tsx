@@ -4,7 +4,8 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { SparklesCore } from '@/components/ui/sparkles'
 import { LiquidMetalButton } from '@/components/ui/liquid-metal-button'
-import { Zap, Shield, Activity, Globe, Lock } from 'lucide-react'
+import { GlassButton } from '@/components/ui/glass-button'
+import { Zap, Shield, Activity, Globe, Lock, Cpu } from 'lucide-react'
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
@@ -48,6 +49,24 @@ export default function Home() {
               AI Flood &amp; Grid Safety System
             </span>
           </div>
+        </div>
+
+        {/* Header Navigation Glass Buttons */}
+        <div className="flex items-center gap-3">
+          <GlassButton
+            label="Login Portal"
+            variant="default"
+            icon={<Lock className="w-3.5 h-3.5 text-cyan-400" />}
+            onClick={() => { window.location.href = '/login.html' }}
+            className="!px-4 !py-2 !rounded-xl text-xs"
+          />
+          <GlassButton
+            label="Simulation"
+            variant="cyan"
+            icon={<Cpu className="w-3.5 h-3.5" />}
+            onClick={() => { window.location.href = '/simulation' }}
+            className="!px-4 !py-2 !rounded-xl text-xs"
+          />
         </div>
       </header>
 
@@ -107,7 +126,7 @@ export default function Home() {
           <motion.div {...fadeUp(0.45)} className="flex flex-col items-center gap-6">
             <div className="flex items-center gap-6 flex-wrap justify-center">
               <LiquidMetalButton
-                label="Login"
+                label="Login Portal"
                 onClick={() => { window.location.href = '/login.html' }}
               />
               <LiquidMetalButton

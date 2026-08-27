@@ -148,9 +148,11 @@ export function LiquidMetalButton({
             )}
             {viewMode === "text" && (
               <span style={{
-                fontSize: "15px", fontWeight: 600, letterSpacing: "0.02em",
-                color: "#999", textShadow: "0px 1px 3px rgba(0,0,0,0.6)",
+                fontSize: "15px", fontWeight: 700, letterSpacing: "0.04em",
+                color: isHovered ? "#ffffff" : "#00E5FF",
+                textShadow: "0px 1px 4px rgba(0,0,0,0.9), 0 0 12px rgba(0,229,255,0.6)",
                 whiteSpace: "nowrap",
+                transition: "color 0.2s ease",
               }}>
                 {label}
               </span>
