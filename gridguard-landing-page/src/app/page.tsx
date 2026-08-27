@@ -4,7 +4,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { SparklesCore } from '@/components/ui/sparkles'
 import { LiquidMetalButton } from '@/components/ui/liquid-metal-button'
-import { Zap, Shield, Activity, Globe, Cpu, Lock } from 'lucide-react'
+import { Zap, Shield, Activity, Globe, Lock } from 'lucide-react'
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
@@ -48,21 +48,6 @@ export default function Home() {
               AI Flood &amp; Grid Safety System
             </span>
           </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <a
-            href="/login.html"
-            className="text-xs px-4 py-2 rounded-lg font-semibold text-white/80 hover:text-white bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
-          >
-            Login Portal
-          </a>
-          <a
-            href="/simulation"
-            className="text-xs px-4 py-2 rounded-lg font-semibold text-white bg-gradient-to-r from-cyan-500 to-blue-600 hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-md shadow-cyan-500/20"
-          >
-            <Cpu className="w-3.5 h-3.5" /> Simulation
-          </a>
         </div>
       </header>
 
